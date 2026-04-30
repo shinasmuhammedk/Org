@@ -1,1 +1,2 @@
 .env services/api-core/.env 
+services/api-core/.env 
