@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"org/api-core/internal/auth/cache"
+	"org/api-core/internal/auth/repository"
 	"org/api-core/internal/auth/security"
 	"org/api-core/internal/db"
 	"strings"
@@ -14,16 +16,25 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type AuthService struct{}
+type AuthService struct {
+	userRepo repository.UserRepository
+}
 
-func NewAuthService() *AuthService {
-	return &AuthService{}
+func NewAuthService(userRepo repository.UserRepository) *AuthService {
+	return &AuthService{
+		userRepo: userRepo,
+	}
+}
+
+type TokenPair struct {
+	AccessToken  string
+	RefreshToken string
 }
 
 func (s *AuthService) Signup(ctx context.Context, email, password string) (string, error) {
 
 	// 🔴 Check existing user
-	existing, _ := db.QueriesInstance.GetUserByEmail(ctx, email)
+	existing, _ := s.userRepo.GetUserByEmail(ctx, email)
 	if existing.Email != "" {
 		return "", errors.New("email already registered")
 	}
@@ -42,7 +53,7 @@ func (s *AuthService) Signup(ctx context.Context, email, password string) (strin
 	// 🆔 Create user
 	userID := uuid.New()
 
-	_, err = db.QueriesInstance.CreateUser(ctx, db.CreateUserParams{
+	_, err = s.userRepo.CreateUser(ctx, db.CreateUserParams{
 		ID:         userID,
 		Email:      email,
 		Password:   hashedPassword,
@@ -53,7 +64,7 @@ func (s *AuthService) Signup(ctx context.Context, email, password string) (strin
 	}
 
 	// 🔑 Generate verification token
-	token, err := security.GenerateToken(userID.String())
+	token, err := security.GenerateAccessToken(userID.String())
 	if err != nil {
 		return "", err
 	}
@@ -70,32 +81,44 @@ func (s *AuthService) Signup(ctx context.Context, email, password string) (strin
 	return token, nil
 }
 
-func (s *AuthService) Login(ctx context.Context, email, password string) (string, error) {
+func (s *AuthService) Login(ctx context.Context, email, password string) (*TokenPair, error) {
 
 	// 🔍 Get user
-	user, err := db.QueriesInstance.GetUserByEmail(ctx, email)
+	user, err := s.userRepo.GetUserByEmail(ctx, email)
 	if err != nil {
-		return "", errors.New("invalid credentials")
+		return nil, errors.New("invalid credentials")
 	}
 
 	// 🔐 Check password
 	err = security.CheckPassword(user.Password, password)
 	if err != nil {
-		return "", errors.New("invalid credentials")
+		return nil, errors.New("invalid credentials")
 	}
 
 	// 🚫 Check email verification
 	if !user.IsVerified {
-		return "", errors.New("please verify your email first")
+		return nil, errors.New("please verify your email first")
 	}
 
-	// 🔑 Generate JWT
-	token, err := security.GenerateToken(user.ID.String())
+	accessToken, err := security.GenerateAccessToken(user.ID.String())
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return token, nil
+	refreshToken, err := security.GenerateRefreshToken(user.ID.String())
+	if err != nil {
+		return nil, err
+	}
+
+	err = cache.StoreRefreshToken(ctx, refreshToken, user.ID.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return &TokenPair{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}, nil
 }
 
 func (s *AuthService) VerifyEmail(ctx context.Context, token string) error {
@@ -109,7 +132,7 @@ func (s *AuthService) VerifyEmail(ctx context.Context, token string) error {
 		return err
 	}
 
-	err = db.QueriesInstance.VerifyUser(ctx, parsedID)
+	err = s.userRepo.VerifyUser(ctx, parsedID)
 	if err != nil {
 		return err
 	}
@@ -122,12 +145,12 @@ func (s *AuthService) VerifyEmail(ctx context.Context, token string) error {
 }
 
 func (s *AuthService) ForgotPassword(c context.Context, email string) error {
-	user, err := db.QueriesInstance.GetUserByEmail(c, email)
+	user, err := s.userRepo.GetUserByEmail(c, email)
 	if err != nil {
 		return nil
 	}
 
-	token, err := security.GenerateToken(user.ID.String())
+	token, err := security.GenerateAccessToken(user.ID.String())
 	if err != nil {
 		return err
 	}
@@ -173,7 +196,7 @@ func (s *AuthService) ResetPassword(c context.Context, token string, newPassword
 		return err
 	}
 
-	err = db.QueriesInstance.UpdateUserPassword(c, db.UpdateUserPasswordParams{
+	err = s.userRepo.UpdateUserPassword(c, db.UpdateUserPasswordParams{
 		Password: string(hashedPassword),
 		ID:       userUUID,
 	})
@@ -185,4 +208,85 @@ func (s *AuthService) ResetPassword(c context.Context, token string, newPassword
 	_ = cache.DeletePasswordResetToken(c, token)
 
 	return nil
+}
+
+func (s *AuthService) RefreshAccessToken(ctx context.Context, refreshToken string) (*TokenPair, error) {
+	refreshToken = strings.TrimSpace(refreshToken)
+
+	// 1. check if token exists
+	userID, err := cache.GetRefreshToken(ctx, refreshToken)
+	if err != nil {
+		return nil, errors.New("invalid refresh token")
+	}
+
+	// 2. DELETE old refresh token (rotation)
+	_ = cache.DeleteRefreshToken(ctx, refreshToken)
+
+	// 3. generate new tokens
+	newAccessToken, err := security.GenerateAccessToken(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	newRefreshToken, err := security.GenerateRefreshToken(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	// 4. store new refresh token
+	err = cache.StoreRefreshToken(ctx, newRefreshToken, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &TokenPair{
+		AccessToken:  newAccessToken,
+		RefreshToken: newRefreshToken,
+	}, nil
+}
+
+func (s *AuthService) Logout(ctx context.Context, refreshToken string) error {
+	refreshToken = strings.TrimSpace(refreshToken)
+
+	return cache.DeleteRefreshToken(ctx, refreshToken)
+}
+
+
+
+func (s *AuthService) GetOrCreateGoogleUser(ctx context.Context, email string) (*TokenPair, error) {
+
+	user, err := s.userRepo.GetUserByEmail(ctx, email)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			userID := uuid.New()
+
+			user, err = s.userRepo.CreateUser(ctx, db.CreateUserParams{
+				ID:         userID,
+				Email:      email,
+				Password:   "",
+				IsVerified: true,
+			})
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			return nil, err
+		}
+	}
+
+	accessToken, err := security.GenerateAccessToken(user.ID.String())
+	if err != nil {
+		return nil, err
+	}
+
+	refreshToken, err := security.GenerateRefreshToken(user.ID.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return &TokenPair{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}, nil
 }

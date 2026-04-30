@@ -10,6 +10,20 @@ import (
 	"github.com/google/uuid"
 )
 
+type ConnectedAccount struct {
+	ID             uuid.UUID
+	UserID         uuid.UUID
+	Provider       string
+	ProviderUserID sql.NullString
+	Email          sql.NullString
+	AccessToken    string
+	RefreshToken   sql.NullString
+	ExpiresAt      sql.NullTime
+	Scopes         sql.NullString
+	CreatedAt      sql.NullTime
+	UpdatedAt      sql.NullTime
+}
+
 type User struct {
 	ID         uuid.UUID
 	Email      string

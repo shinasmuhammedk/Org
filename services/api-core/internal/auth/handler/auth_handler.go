@@ -8,7 +8,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Signup(c *gin.Context) {
+type AuthHandler struct {
+	authService *service.AuthService
+}
+
+func NewAuthHandler(authService *service.AuthService) *AuthHandler {
+	return &AuthHandler{
+		authService: authService,
+	}
+}
+
+func (h *AuthHandler) Signup(c *gin.Context) {
 	var body struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -24,9 +34,7 @@ func Signup(c *gin.Context) {
 		return
 	}
 
-	authService := service.NewAuthService()
-
-	token, err := authService.Signup(c, body.Email, body.Password)
+	token, err := h.authService.Signup(c.Request.Context(), body.Email, body.Password)
 	if err != nil {
 		response.BadRequest(c, err.Error(), nil)
 		return
@@ -41,7 +49,7 @@ func Signup(c *gin.Context) {
 	response.Created(c, "user created. please check your email to verify account", nil)
 }
 
-func Login(c *gin.Context) {
+func (h *AuthHandler) Login(c *gin.Context) {
 	var body struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -57,28 +65,30 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	authService := service.NewAuthService()
-
-	token, err := authService.Login(c, body.Email, body.Password)
+	tokenPair, err := h.authService.Login(c.Request.Context(), body.Email, body.Password)
 	if err != nil {
 		response.Unauthorized(c, err.Error())
 		return
 	}
 
-	response.OK(c, "login successful", gin.H{
-		"token": token,
+	response.OK(c, "login successfull", gin.H{
+		"access_token":  tokenPair.AccessToken,
+		"refresh_token": tokenPair.RefreshToken,
 	})
 }
 
-func Me(c *gin.Context) {
-	userID, _ := c.Get("user_id")
+func (h *AuthHandler) Me(c *gin.Context) {
+	userID, exists := c.Get("user_id")
+	if !exists {
+		response.Unauthorized(c, "unauthorized")
+		return
+	}
 
 	response.OK(c, "you are authenticated", gin.H{
 		"user_id": userID,
 	})
 }
-
-func VerifyEmail(c *gin.Context) {
+func (h *AuthHandler) VerifyEmail(c *gin.Context) {
 	token := c.Query("token")
 
 	if token == "" {
@@ -86,9 +96,8 @@ func VerifyEmail(c *gin.Context) {
 		return
 	}
 
-	authService := service.NewAuthService()
 
-	err := authService.VerifyEmail(c, token)
+	err := h.authService.VerifyEmail(c.Request.Context(), token)
 	if err != nil {
 		response.BadRequest(c, c.Err().Error(), nil)
 		return
@@ -97,7 +106,7 @@ func VerifyEmail(c *gin.Context) {
 	response.OK(c, "email verified successfully", nil)
 }
 
-func ForgotPassword(c *gin.Context) {
+func (h *AuthHandler) ForgotPassword(c *gin.Context) {
 	var body struct {
 		Email string `json:"email"`
 	}
@@ -107,9 +116,7 @@ func ForgotPassword(c *gin.Context) {
 		return
 	}
 
-	authService := service.NewAuthService()
-
-	err := authService.ForgotPassword(c, body.Email)
+	err := h.authService.ForgotPassword(c.Request.Context(), body.Email)
 	if err != nil {
 		response.OK(c, "if this email exists, reset link has been sent", nil)
 		return
@@ -118,28 +125,25 @@ func ForgotPassword(c *gin.Context) {
 	response.OK(c, "if this email exists, reset link has been sent", nil)
 }
 
-func ResetPassword(c *gin.Context) {
+func (h *AuthHandler) ResetPassword(c *gin.Context) {
 	var body struct {
 		Token       string `json:"token"`
 		NewPassword string `json:"new_password"`
 	}
-    
-    
+
 	if err := c.ShouldBindJSON(&body); err != nil {
-        response.BadRequest(c, "invalid input", err.Error())
+		response.BadRequest(c, "invalid input", err.Error())
 		return
 	}
-    fmt.Println("RAW TOKEN:", body.Token)
-    fmt.Printf("TOKEN LEN: %d\n", len(body.Token))
-    
+	fmt.Println("RAW TOKEN:", body.Token)
+	fmt.Printf("TOKEN LEN: %d\n", len(body.Token))
+
 	if body.Token == "" || body.NewPassword == "" {
 		response.BadRequest(c, "token and new password required", nil)
 		return
 	}
 
-	authService := service.NewAuthService()
-
-	err := authService.ResetPassword(c, body.Token, body.NewPassword)
+	err := h.authService.ResetPassword(c.Request.Context(), body.Token, body.NewPassword)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"status":  500,
@@ -150,4 +154,46 @@ func ResetPassword(c *gin.Context) {
 	}
 
 	response.OK(c, "password reset successfully", nil)
+}
+
+func (h *AuthHandler) RefreshToken(c *gin.Context) {
+	var body struct {
+		RefreshToken string `json:"refresh_token"`
+	}
+
+	if err := c.ShouldBindJSON(&body); err != nil {
+		response.BadRequest(c, "invalid input", err.Error())
+		return
+	}
+
+
+	tokenPair, err := h.authService.RefreshAccessToken(c.Request.Context(), body.RefreshToken)
+	if err != nil {
+		response.Unauthorized(c, "invalid refresh token")
+		return
+	}
+
+	response.OK(c, "token refreshed", gin.H{
+		"access_token":  tokenPair.AccessToken,
+		"refresh_token": tokenPair.RefreshToken,
+	})
+}
+
+func (h *AuthHandler) Logout(c *gin.Context) {
+	var body struct {
+		RefreshToken string `json:"refresh_token"`
+	}
+
+	if err := c.ShouldBindJSON(&body); err != nil {
+		response.BadRequest(c, "invalid input", err.Error())
+		return
+	}
+
+	err := h.authService.Logout(c.Request.Context(), body.RefreshToken)
+	if err != nil {
+		response.InternalServerError(c, "logout failed", err.Error())
+		return
+	}
+
+	response.OK(c, "logged out successfully", nil)
 }
