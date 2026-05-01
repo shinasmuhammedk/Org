@@ -34,15 +34,9 @@ func (h *AuthHandler) Signup(c *gin.Context) {
 		return
 	}
 
-	token, err := h.authService.Signup(c.Request.Context(), body.Email, body.Password)
+	_, err := h.authService.Signup(c.Request.Context(), body.Email, body.Password)
 	if err != nil {
 		response.BadRequest(c, err.Error(), nil)
-		return
-	}
-
-	err = service.SendVerificationEmail(body.Email, token)
-	if err != nil {
-		response.InternalServerError(c, "failed to send verification email", err.Error())
 		return
 	}
 
@@ -88,6 +82,7 @@ func (h *AuthHandler) Me(c *gin.Context) {
 		"user_id": userID,
 	})
 }
+
 func (h *AuthHandler) VerifyEmail(c *gin.Context) {
 	token := c.Query("token")
 
@@ -96,10 +91,9 @@ func (h *AuthHandler) VerifyEmail(c *gin.Context) {
 		return
 	}
 
-
 	err := h.authService.VerifyEmail(c.Request.Context(), token)
 	if err != nil {
-		response.BadRequest(c, c.Err().Error(), nil)
+		response.BadRequest(c, err.Error(), nil)
 		return
 	}
 
@@ -145,11 +139,7 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 
 	err := h.authService.ResetPassword(c.Request.Context(), body.Token, body.NewPassword)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"status":  500,
-			"message": "reset failed",
-			"error":   err.Error(),
-		})
+		response.InternalServerError(c, "reset failed", err.Error())
 		return
 	}
 
@@ -165,7 +155,6 @@ func (h *AuthHandler) RefreshToken(c *gin.Context) {
 		response.BadRequest(c, "invalid input", err.Error())
 		return
 	}
-
 
 	tokenPair, err := h.authService.RefreshAccessToken(c.Request.Context(), body.RefreshToken)
 	if err != nil {

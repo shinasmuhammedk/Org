@@ -5,12 +5,13 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"org/api-core/internal/auth/cache"
+	"org/api-core/internal/auth/tokenStore"
 	"org/api-core/internal/auth/repository"
 	"org/api-core/internal/auth/security"
 	"org/api-core/internal/db"
 	"strings"
 	"time"
+    authEmail "org/api-core/internal/auth/email"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -32,25 +33,20 @@ type TokenPair struct {
 }
 
 func (s *AuthService) Signup(ctx context.Context, email, password string) (string, error) {
-
-	// 🔴 Check existing user
 	existing, _ := s.userRepo.GetUserByEmail(ctx, email)
 	if existing.Email != "" {
 		return "", errors.New("email already registered")
 	}
 
-	// 🔐 Validate password (basic)
 	if len(password) < 6 {
 		return "", errors.New("password must be at least 6 characters")
 	}
 
-	// 🔐 Hash password
 	hashedPassword, err := security.HashPassword(password)
 	if err != nil {
 		return "", err
 	}
 
-	// 🆔 Create user
 	userID := uuid.New()
 
 	_, err = s.userRepo.CreateUser(ctx, db.CreateUserParams{
@@ -63,20 +59,20 @@ func (s *AuthService) Signup(ctx context.Context, email, password string) (strin
 		return "", err
 	}
 
-	// 🔑 Generate verification token
 	token, err := security.GenerateAccessToken(userID.String())
 	if err != nil {
 		return "", err
 	}
-	// 🧠 Store in Redis (TTL 15 min)
-	err = cache.StoreVerificationToken(token, userID.String(), 15*time.Minute)
+
+	err = tokenstore.StoreVerificationToken(token, userID.String(), 24*time.Hour)
 	if err != nil {
 		return "", err
 	}
 
-	// 📧 Send email (for now just log)
-	verifyLink := "http://localhost:8080/verify-email?token=" + token
-	println("VERIFY LINK:", verifyLink)
+	err = authEmail.SendVerificationEmail(email, token)
+	if err != nil {
+		return "", err
+	}
 
 	return token, nil
 }
@@ -110,7 +106,7 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (*Token
 		return nil, err
 	}
 
-	err = cache.StoreRefreshToken(ctx, refreshToken, user.ID.String())
+	err = tokenstore.StoreRefreshToken(ctx, refreshToken, user.ID.String())
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +118,7 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (*Token
 }
 
 func (s *AuthService) VerifyEmail(ctx context.Context, token string) error {
-	userID, err := cache.GetUserIDByToken(token)
+	userID, err := tokenstore.GetUserIDByToken(token)
 	if err != nil {
 		return errors.New("invalid or expired token")
 	}
@@ -137,7 +133,7 @@ func (s *AuthService) VerifyEmail(ctx context.Context, token string) error {
 		return err
 	}
 
-	err = cache.DeleteToken(token)
+	err = tokenstore.DeleteToken(token)
 	if err != nil {
 		return err
 	}
@@ -155,7 +151,7 @@ func (s *AuthService) ForgotPassword(c context.Context, email string) error {
 		return err
 	}
 
-	err = cache.StorePasswordResetToken(
+	err = tokenstore.StorePasswordResetToken(
 		c,
 		token,
 		user.ID.String(),
@@ -165,7 +161,7 @@ func (s *AuthService) ForgotPassword(c context.Context, email string) error {
 		return err
 	}
 
-	err = SendPasswordResetEmail(user.Email, token)
+	err = authEmail.SendPasswordResetEmail(user.Email, token)
 	if err != nil {
 		return err
 	}
@@ -176,7 +172,7 @@ func (s *AuthService) ResetPassword(c context.Context, token string, newPassword
 	fmt.Println("RESET TOKEN:", token)
 	token = strings.TrimSpace(token)
 
-	userId, err := cache.GetPasswordResetToken(c, token)
+	userId, err := tokenstore.GetPasswordResetToken(c, token)
 	if err != nil {
 		fmt.Println("REDIS ERROR:", err)
 		return errors.New("invalid or expired token")
@@ -205,7 +201,7 @@ func (s *AuthService) ResetPassword(c context.Context, token string, newPassword
 		return err
 	}
 
-	_ = cache.DeletePasswordResetToken(c, token)
+	_ = tokenstore.DeletePasswordResetToken(c, token)
 
 	return nil
 }
@@ -214,13 +210,13 @@ func (s *AuthService) RefreshAccessToken(ctx context.Context, refreshToken strin
 	refreshToken = strings.TrimSpace(refreshToken)
 
 	// 1. check if token exists
-	userID, err := cache.GetRefreshToken(ctx, refreshToken)
+	userID, err := tokenstore.GetRefreshToken(ctx, refreshToken)
 	if err != nil {
 		return nil, errors.New("invalid refresh token")
 	}
 
 	// 2. DELETE old refresh token (rotation)
-	_ = cache.DeleteRefreshToken(ctx, refreshToken)
+	_ = tokenstore.DeleteRefreshToken(ctx, refreshToken)
 
 	// 3. generate new tokens
 	newAccessToken, err := security.GenerateAccessToken(userID)
@@ -234,7 +230,7 @@ func (s *AuthService) RefreshAccessToken(ctx context.Context, refreshToken strin
 	}
 
 	// 4. store new refresh token
-	err = cache.StoreRefreshToken(ctx, newRefreshToken, userID)
+	err = tokenstore.StoreRefreshToken(ctx, newRefreshToken, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -248,7 +244,7 @@ func (s *AuthService) RefreshAccessToken(ctx context.Context, refreshToken strin
 func (s *AuthService) Logout(ctx context.Context, refreshToken string) error {
 	refreshToken = strings.TrimSpace(refreshToken)
 
-	return cache.DeleteRefreshToken(ctx, refreshToken)
+	return tokenstore.DeleteRefreshToken(ctx, refreshToken)
 }
 
 

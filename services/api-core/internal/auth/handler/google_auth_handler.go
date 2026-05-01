@@ -3,8 +3,11 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
 
+	"Org/utils/response"
 	"org/api-core/internal/auth/service"
 	"org/api-core/internal/oauth/provider"
 
@@ -22,7 +25,6 @@ func NewGoogleAuthHandler(authService *service.AuthService) *GoogleAuthHandler {
 	}
 }
 
-// ✅ START endpoint
 func (h *GoogleAuthHandler) GoogleAuthStart(c *gin.Context) {
 	config := provider.GoogleAuthConfig()
 
@@ -34,12 +36,11 @@ func (h *GoogleAuthHandler) GoogleAuthStart(c *gin.Context) {
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
-// ✅ CALLBACK (this is Step 3 you asked about)
 func (h *GoogleAuthHandler) GoogleAuthCallback(c *gin.Context) {
 	code := c.Query("code")
 
 	if code == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "code missing"})
+		response.BadRequest(c, "code missing", nil)
 		return
 	}
 
@@ -47,7 +48,7 @@ func (h *GoogleAuthHandler) GoogleAuthCallback(c *gin.Context) {
 
 	token, err := config.Exchange(context.Background(), code)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "token exchange failed"})
+		response.InternalServerError(c, "token exchange failed", err.Error())
 		return
 	}
 
@@ -55,7 +56,7 @@ func (h *GoogleAuthHandler) GoogleAuthCallback(c *gin.Context) {
 
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "failed to fetch user"})
+		response.InternalServerError(c, "failed to fetch google user", err.Error())
 		return
 	}
 	defer resp.Body.Close()
@@ -66,16 +67,33 @@ func (h *GoogleAuthHandler) GoogleAuthCallback(c *gin.Context) {
 		Name  string `json:"name"`
 	}
 
-	json.NewDecoder(resp.Body).Decode(&userInfo)
-
-	tokenPair, err := h.authService.GetOrCreateGoogleUser(c.Request.Context(), userInfo.Email)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "auth failed"})
+	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
+		response.InternalServerError(c, "failed to decode google user", err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"access_token":  tokenPair.AccessToken,
-		"refresh_token": tokenPair.RefreshToken,
-	})
+	if userInfo.Email == "" {
+		response.BadRequest(c, "google account email missing", nil)
+		return
+	}
+
+	tokenPair, err := h.authService.GetOrCreateGoogleUser(
+		c.Request.Context(),
+		userInfo.Email,
+	)
+
+	if err != nil {
+		response.InternalServerError(c, "google auth failed", err.Error())
+		return
+	}
+	frontendURL := os.Getenv("APP_URL")
+
+	redirectURL := fmt.Sprintf(
+		"%s/oauth/callback?access_token=%s&refresh_token=%s",
+		frontendURL,
+		tokenPair.AccessToken,
+		tokenPair.RefreshToken,
+	)
+
+	c.Redirect(http.StatusTemporaryRedirect, redirectURL)
 }
