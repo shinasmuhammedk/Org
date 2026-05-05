@@ -11,6 +11,31 @@ import (
 	"github.com/google/uuid"
 )
 
+const createOAuthUser = `-- name: CreateOAuthUser :one
+INSERT INTO users (id, email, password, is_verified)
+VALUES ($1, $2, '', true)
+RETURNING id, email, password, is_verified, plan, created_at
+`
+
+type CreateOAuthUserParams struct {
+	ID    uuid.UUID
+	Email string
+}
+
+func (q *Queries) CreateOAuthUser(ctx context.Context, arg CreateOAuthUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, createOAuthUser, arg.ID, arg.Email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Password,
+		&i.IsVerified,
+		&i.Plan,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (id, email, password, is_verified)
 VALUES ($1, $2, $3, $4)

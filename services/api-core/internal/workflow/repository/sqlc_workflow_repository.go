@@ -1,0 +1,66 @@
+package repository
+
+import (
+	"context"
+	"org/api-core/internal/db"
+
+	"github.com/google/uuid"
+)
+
+type SQLCWorkflowRepository struct {
+	q *db.Queries
+}
+
+func NewSQLCWorkflowRepository(q *db.Queries) *SQLCWorkflowRepository {
+	return &SQLCWorkflowRepository{q: q}
+}
+
+func (r *SQLCWorkflowRepository) CreateWorkflow(ctx context.Context, arg db.CreateWorkflowParams) (db.Workflow, error) {
+	return r.q.CreateWorkflow(ctx, arg)
+}
+
+func (r *SQLCWorkflowRepository) ListWorkflowByUser(ctx context.Context, userID uuid.UUID) ([]db.Workflow, error) {
+	return r.q.ListWorkflowByUser(ctx, userID)
+}
+
+func (r *SQLCWorkflowRepository) GetWorkflowByID(ctx context.Context, arg db.GetWorkflowByIDParams) (db.Workflow, error) {
+	return r.q.GetWorkflowByID(ctx, arg)
+}
+
+func (r *SQLCWorkflowRepository) DeleteWorkflow(ctx context.Context, arg db.DeleteWorkflowParams) error {
+	return r.q.DeleteWorkflow(ctx, arg)
+}
+
+func (r *SQLCWorkflowRepository) CreateWorkflowStep(ctx context.Context, arg db.CreateWorkflowStepParams) (db.WorkflowStep, error) {
+	return r.q.CreateWorkflowStep(ctx, arg)
+}
+
+func (r *SQLCWorkflowRepository) ListWorkflowSteps(ctx context.Context, workflowID uuid.UUID) ([]db.WorkflowStep, error) {
+	return r.q.ListWorkflowSteps(ctx, workflowID)
+}
+
+func (r *SQLCWorkflowRepository) CreateWorkflowRun(ctx context.Context, arg db.CreateWorkflowRunParams) (db.WorkflowRun, error) {
+	return r.q.CreateWorkflowRun(ctx, arg)
+}
+
+func (r *SQLCWorkflowRepository) UpdateWorkflowRunStatus(ctx context.Context, arg db.UpdateWorkflowRunStatusParams) error {
+	return r.q.UpdateWorkflowRunStatus(ctx, arg)
+}
+
+func (r *SQLCWorkflowRepository) ListWorkflowRuns(ctx context.Context, arg db.ListWorkflowRunsParams) ([]db.WorkflowRun, error) {
+	return r.q.ListWorkflowRuns(ctx, arg)
+}
+
+
+
+func (r *SQLCWorkflowRepository) CreateWorkflowStepRun(ctx context.Context, arg db.CreateWorkflowStepRunParams) (db.WorkflowStepRun, error) {
+	return r.q.CreateWorkflowStepRun(ctx, arg)
+}
+
+func (r *SQLCWorkflowRepository) ListWorkflowStepRuns(ctx context.Context, workflowRunID uuid.UUID) ([]db.WorkflowStepRun, error) {
+	return r.q.ListWorkflowStepRuns(ctx, workflowRunID)
+}
+
+func (r *SQLCWorkflowRepository) UpdateWorkflowStepRunStatus(ctx context.Context, arg db.UpdateWorkflowStepRunStatusParams) error {
+	return r.q.UpdateWorkflowStepRunStatus(ctx, arg)
+}

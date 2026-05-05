@@ -6,8 +6,11 @@ package db
 
 import (
 	"database/sql"
+	"encoding/json"
+	"time"
 
 	"github.com/google/uuid"
+	"github.com/sqlc-dev/pqtype"
 )
 
 type ConnectedAccount struct {
@@ -31,4 +34,48 @@ type User struct {
 	IsVerified bool
 	Plan       sql.NullString
 	CreatedAt  sql.NullTime
+}
+
+type Workflow struct {
+	ID          uuid.UUID
+	UserID      uuid.UUID
+	Name        string
+	Description string
+	TriggerType string
+	IsActive    bool
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+
+type WorkflowRun struct {
+	ID           uuid.UUID
+	WorkflowID   uuid.UUID
+	UserID       uuid.UUID
+	Status       string
+	StartedAt    sql.NullTime
+	FinishedAt   sql.NullTime
+	ErrorMessage sql.NullString
+	CreatedAt    time.Time
+}
+
+type WorkflowStep struct {
+	ID         uuid.UUID
+	WorkflowID uuid.UUID
+	StepOrder  int32
+	StepType   string
+	Config     json.RawMessage
+	CreatedAt  time.Time
+}
+
+type WorkflowStepRun struct {
+	ID             uuid.UUID
+	WorkflowRunID  uuid.UUID
+	WorkflowStepID uuid.UUID
+	Status         string
+	Input          pqtype.NullRawMessage
+	Output         pqtype.NullRawMessage
+	ErrorMessage   sql.NullString
+	StartedAt      sql.NullTime
+	FinishedAt     sql.NullTime
+	CreatedAt      time.Time
 }

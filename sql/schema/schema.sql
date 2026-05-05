@@ -22,3 +22,50 @@ CREATE TABLE connected_accounts (
 
     UNIQUE(user_id, provider)
 );
+
+
+
+CREATE TABLE workflows (
+    id UUID PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    trigger_type TEXT NOT NULL DEFAULT 'manual',
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+
+CREATE TABLE workflow_steps (
+    id UUID PRIMARY KEY,
+    workflow_id UUID NOT NULL REFERENCES workflows(id) ON DELETE CASCADE,
+    step_order INT NOT NULL,
+    step_type TEXT NOT NULL,
+    config JSONB NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE workflow_runs (
+    id UUID PRIMARY KEY,
+    workflow_id UUID NOT NULL REFERENCES workflows(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    status TEXT NOT NULL DEFAULT 'pending',
+    started_at TIMESTAMP,
+    finished_at TIMESTAMP,
+    error_message TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE workflow_step_runs (
+    id UUID PRIMARY KEY,
+    workflow_run_id UUID NOT NULL REFERENCES workflow_runs(id) ON DELETE CASCADE,
+    workflow_step_id UUID NOT NULL REFERENCES workflow_steps(id) ON DELETE CASCADE,
+    status TEXT NOT NULL DEFAULT 'pending',
+    input JSONB,
+    output JSONB,
+    error_message TEXT,
+    started_at TIMESTAMP,
+    finished_at TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);

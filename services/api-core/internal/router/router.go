@@ -13,6 +13,10 @@ import (
 	oauthHandlerPkg "org/api-core/internal/oauth/handler"
 	oauthRepository "org/api-core/internal/oauth/repository"
 	oauthServicePkg "org/api-core/internal/oauth/service"
+
+	workflowHandlerPkg "org/api-core/internal/workflow/handler"
+	workflowRepository "org/api-core/internal/workflow/repository"
+	workflowServicePkg "org/api-core/internal/workflow/service"
 )
 
 func RegisterRoutes(r *gin.Engine) {
@@ -20,6 +24,7 @@ func RegisterRoutes(r *gin.Engine) {
 
 	authRoutes(r)
 	oauthRoutes(r)
+	workflowRoutes(r)
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -54,4 +59,23 @@ func oauthRoutes(r *gin.Engine) {
 
 	r.GET("/oauth/google/start", middleware.AuthMiddleware(), oauthHandler.GoogleStart)
 	r.GET("/oauth/google/callback", oauthHandler.GoogleCallback)
+}
+
+func workflowRoutes(r *gin.Engine) {
+	workflowRepo := workflowRepository.NewSQLCWorkflowRepository(db.QueriesInstance)
+	workflowService := workflowServicePkg.NewWorkflowService(workflowRepo)
+	workflowHandler := workflowHandlerPkg.NewWorkflowHandler(workflowService)
+
+	auth := r.Group("/", middleware.AuthMiddleware())
+
+	auth.POST("/workflows", workflowHandler.CreateWorkflow)
+	auth.GET("/workflows", workflowHandler.ListWorkflows)
+	auth.DELETE("/workflows/:id", workflowHandler.DeleteWorkflow)
+
+	auth.POST("/workflows/:id/steps", workflowHandler.CreateStep)
+	auth.GET("/workflows/:id/steps", workflowHandler.ListSteps)
+
+	auth.POST("/workflows/:id/run", workflowHandler.RunWorkflow)
+	auth.GET("/workflows/:id/runs", workflowHandler.ListWorkflowRuns)
+	auth.GET("/workflow-runs/:id/steps", workflowHandler.ListWorkflowStepRuns)
 }

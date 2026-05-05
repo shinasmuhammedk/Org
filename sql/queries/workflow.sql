@@ -1,0 +1,85 @@
+-- name: CreateWorkflow :one
+INSERT INTO workflows (
+    id, user_id, name, description, trigger_type, is_active
+) VALUES (
+    $1, $2, $3, $4, $5, $6
+)
+RETURNING *;
+
+-- name: GetWorkflowByID :one
+SELECT * FROM workflows
+WHERE id = $1 AND user_id = $2;
+
+-- name: ListWorkflowByUser :many
+SELECT * FROM workflows
+WHERE user_id = $1
+ORDER BY created_at DESC;
+
+-- name: DeleteWorkflow :exec
+DELETE FROM workflows
+WHERE id = $1 AND user_id = $2;
+
+-- name: CreateWorkflowStep :one
+INSERT INTO workflow_steps (
+    id, workflow_id, step_order, step_type, config
+) VALUES (
+    $1, $2, $3, $4, $5
+)
+RETURNING *;
+
+-- name: ListWorkflowSteps :many
+SELECT * FROM workflow_steps
+WHERE workflow_id = $1
+ORDER BY step_order ASC;
+
+-- name: CreateWorkflowRun :one
+INSERT INTO workflow_runs (
+    id, workflow_id, user_id, status, started_at
+) VALUES (
+    $1, $2, $3, $4, NOW()
+)
+RETURNING *;
+
+-- name: UpdateWorkflowRunStatus :exec
+UPDATE workflow_runs
+SET status = $2,
+    error_message = $3,
+    finished_at = NOW()
+WHERE id = $1;
+
+-- name: ListWorkflowRuns :many
+SELECT * FROM workflow_runs
+WHERE workflow_id = $1 AND user_id = $2
+ORDER BY created_at DESC;
+
+-- name: CreateWorkflowStepRun :one
+INSERT INTO workflow_step_runs (
+    id,
+    workflow_run_id,
+    workflow_step_id,
+    status,
+    input,
+    output,
+    error_message,
+    started_at,
+    finished_at
+) VALUES (
+    $1, $2, $3, $4, $5, $6, $7, NOW(), NOW()
+)
+RETURNING *;
+
+
+-- name: ListWorkflowStepRuns :many
+SELECT *
+FROM workflow_step_runs
+WHERE workflow_run_id = $1
+ORDER BY created_at ASC;
+
+
+-- name: UpdateWorkflowStepRunStatus :exec
+UPDATE workflow_step_runs
+SET status = $2,
+    output = $3,
+    error_message = $4,
+    finished_at = NOW()
+WHERE id = $1;
