@@ -21,9 +21,14 @@ WHERE id = $1 AND user_id = $2;
 
 -- name: CreateWorkflowStep :one
 INSERT INTO workflow_steps (
-    id, workflow_id, step_order, step_type, config
+    id,
+    workflow_id,
+    frontend_node_id,
+    step_order,
+    step_type,
+    config
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1, $2, $3, $4, $5, $6
 )
 RETURNING *;
 
@@ -83,3 +88,32 @@ SET status = $2,
     error_message = $4,
     finished_at = NOW()
 WHERE id = $1;
+
+
+-- name: DeleteWorkflowSteps :exec
+DELETE FROM workflow_steps
+WHERE workflow_id = $1;
+
+
+-- name: CreateWorkflowEdge :one
+INSERT INTO workflow_edges (
+    id,
+    workflow_id,
+    source_step_id,
+    target_step_id
+) VALUES (
+    $1, $2, $3, $4
+)
+RETURNING *;
+
+
+-- name: ListWorkflowEdges :many
+SELECT *
+FROM workflow_edges
+WHERE workflow_id = $1
+ORDER BY created_at ASC;
+
+
+-- name: DeleteWorkflowEdges :exec
+DELETE FROM workflow_edges
+WHERE workflow_id = $1;

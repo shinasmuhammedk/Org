@@ -17,6 +17,7 @@ type WorkflowRepository interface {
 	// Steps
 	CreateWorkflowStep(ctx context.Context, arg db.CreateWorkflowStepParams) (db.WorkflowStep, error)
 	ListWorkflowSteps(ctx context.Context, workflowID uuid.UUID) ([]db.WorkflowStep, error)
+	DeleteWorkflowSteps(ctx context.Context, workflowID uuid.UUID) error // ✅ ADDED
 
 	// Runs
 	CreateWorkflowRun(ctx context.Context, arg db.CreateWorkflowRunParams) (db.WorkflowRun, error)
@@ -25,5 +26,10 @@ type WorkflowRepository interface {
 
 	CreateWorkflowStepRun(ctx context.Context, arg db.CreateWorkflowStepRunParams) (db.WorkflowStepRun, error)
 	ListWorkflowStepRuns(ctx context.Context, workflowRunID uuid.UUID) ([]db.WorkflowStepRun, error)
-    UpdateWorkflowStepRunStatus(ctx context.Context, arg db.UpdateWorkflowStepRunStatusParams) error
+	UpdateWorkflowStepRunStatus(ctx context.Context, arg db.UpdateWorkflowStepRunStatusParams) error
+
+	//Edges
+	CreateWorkflowEdge(ctx context.Context, arg db.CreateWorkflowEdgeParams) (db.WorkflowEdge, error)
+	ListWorkflowEdge(ctx context.Context, workflowID uuid.UUID) ([]db.WorkflowEdge, error)
+	DeleteWorkflowEdge(ctx context.Context, workflowID uuid.UUID) error
 }

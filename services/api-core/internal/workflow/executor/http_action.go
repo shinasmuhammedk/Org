@@ -3,38 +3,80 @@ package executor
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	"io"
 	"net/http"
+	"strings"
+	"time"
 )
 
-func (e *Executor) executeHTTPRequest(config []byte) error {
-
+func (e *Executor) executeHTTPRequest(config []byte) ([]byte, error) {
 	var cfg struct {
-		Method string                 `json:"method"`
-		URL    string                 `json:"url"`
-		Body   map[string]interface{} `json:"body"`
+		Method string          `json:"method"`
+		URL    string          `json:"url"`
+		Body   json.RawMessage `json:"body"`
 	}
 
-	if err := json.Unmarshal(config, &cfg); err != nil{
-        return err
-    }
-    
-    bodyBytes, _ := json.Marshal(cfg.Body)
-    
-    req,err := http.NewRequest(cfg.Method, cfg.URL, bytes.NewBuffer(bodyBytes))
-    if err != nil {
-        return err
-    }
-    
-    req.Header.Set("Content-Type", "application/json")
-    
-    client := &http.Client{}
-    
-    resp, err := client.Do(req)
-    if err != nil {
-        return err
-    }
-    
-    defer resp.Body.Close()
-    
-    return nil
+	if err := json.Unmarshal(config, &cfg); err != nil {
+		return nil, err
+	}
+
+	if cfg.URL == "" {
+		return nil, errors.New("http request url is required")
+	}
+
+	if cfg.Method == "" {
+		cfg.Method = "GET"
+	}
+
+	var bodyBytes []byte
+
+	if len(cfg.Body) > 0 && string(cfg.Body) != "null" {
+		var bodyString string
+
+		if err := json.Unmarshal(cfg.Body, &bodyString); err == nil {
+			bodyBytes = []byte(bodyString)
+		} else {
+			bodyBytes = cfg.Body
+		}
+	}
+
+	req, err := http.NewRequest(
+		strings.ToUpper(cfg.Method),
+		cfg.URL,
+		bytes.NewBuffer(bodyBytes),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{
+		Timeout: 15 * time.Second,
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	result := map[string]interface{}{
+		"status_code": resp.StatusCode,
+		"status":      resp.Status,
+		"body":        string(responseBody),
+	}
+
+	resultBytes, err := json.Marshal(result)
+	if err != nil {
+		return nil, err
+	}
+
+	return resultBytes, nil
 }

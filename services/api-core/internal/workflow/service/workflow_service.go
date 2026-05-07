@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 
 	"github.com/google/uuid"
 	"github.com/sqlc-dev/pqtype"
@@ -18,6 +19,17 @@ type WorkflowService struct {
 
 func NewWorkflowService(repo repository.WorkflowRepository) *WorkflowService {
 	return &WorkflowService{repo: repo}
+}
+
+type SaveWorkflowStepRequest struct {
+	FrontendNodeID string          `json:"frontend_node_id"`
+	StepOrder      int             `json:"step_order"`
+	StepType       string          `json:"step_type"`
+	Config         json.RawMessage `json:"config"`
+}
+
+type SaveWorkflowStepsRequest struct {
+	Steps []SaveWorkflowStepRequest `json:"steps"`
 }
 
 //
@@ -127,7 +139,7 @@ func (s *WorkflowService) RunWorkflow(ctx context.Context, workflowID uuid.UUID,
 			return err
 		}
 
-		err = exec.ExecuteStep(step)
+		output, err := exec.ExecuteStep(step)
 		if err != nil {
 			errMsg := err.Error()
 
@@ -135,7 +147,7 @@ func (s *WorkflowService) RunWorkflow(ctx context.Context, workflowID uuid.UUID,
 				ID:     stepRunID,
 				Status: "failed",
 				Output: pqtype.NullRawMessage{
-					RawMessage: step.Config,
+					RawMessage: output,
 					Valid:      true,
 				},
 				ErrorMessage: sql.NullString{
@@ -195,4 +207,56 @@ func (s *WorkflowService) ListWorkflowRuns(ctx context.Context, workflowID, user
 
 func (s *WorkflowService) ListWorkflowStepRuns(ctx context.Context, workflowRunID uuid.UUID) ([]db.WorkflowStepRun, error) {
 	return s.repo.ListWorkflowStepRuns(ctx, workflowRunID)
+}
+
+func (s *WorkflowService) SaveWorkflowSteps(
+	ctx context.Context,
+	workflowID uuid.UUID,
+	userID uuid.UUID,
+	steps []SaveWorkflowStepRequest,
+) error {
+	_, err := s.repo.GetWorkflowByID(ctx, db.GetWorkflowByIDParams{
+		ID:     workflowID,
+		UserID: userID,
+	})
+	if err != nil {
+		return err
+	}
+
+	err = s.repo.DeleteWorkflowSteps(ctx, workflowID)
+	if err != nil {
+		return err
+	}
+
+	for _, step := range steps {
+		_, err := s.repo.CreateWorkflowStep(ctx, db.CreateWorkflowStepParams{
+			ID:             uuid.New(),
+			WorkflowID:     workflowID,
+			FrontendNodeID: step.FrontendNodeID,
+			StepOrder:      int32(step.StepOrder),
+			StepType:       step.StepType,
+			Config:         step.Config,
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *WorkflowService) GetWorkflowSteps(
+	ctx context.Context,
+	workflowID uuid.UUID,
+	userID uuid.UUID,
+) ([]db.WorkflowStep, error) {
+	_, err := s.repo.GetWorkflowByID(ctx, db.GetWorkflowByIDParams{
+		ID:     workflowID,
+		UserID: userID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return s.repo.ListWorkflowSteps(ctx, workflowID)
 }

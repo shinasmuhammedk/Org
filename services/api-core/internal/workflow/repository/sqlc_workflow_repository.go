@@ -51,8 +51,6 @@ func (r *SQLCWorkflowRepository) ListWorkflowRuns(ctx context.Context, arg db.Li
 	return r.q.ListWorkflowRuns(ctx, arg)
 }
 
-
-
 func (r *SQLCWorkflowRepository) CreateWorkflowStepRun(ctx context.Context, arg db.CreateWorkflowStepRunParams) (db.WorkflowStepRun, error) {
 	return r.q.CreateWorkflowStepRun(ctx, arg)
 }
@@ -63,4 +61,20 @@ func (r *SQLCWorkflowRepository) ListWorkflowStepRuns(ctx context.Context, workf
 
 func (r *SQLCWorkflowRepository) UpdateWorkflowStepRunStatus(ctx context.Context, arg db.UpdateWorkflowStepRunStatusParams) error {
 	return r.q.UpdateWorkflowStepRunStatus(ctx, arg)
+}
+
+func (r *SQLCWorkflowRepository) DeleteWorkflowSteps(ctx context.Context, workflowID uuid.UUID) error {
+	return r.q.DeleteWorkflowSteps(ctx, workflowID)
+}
+
+func (r *SQLCWorkflowRepository) CreateWorkflowEdge(ctx context.Context, arg db.CreateWorkflowEdgeParams) (db.WorkflowEdge, error) {
+	return r.q.CreateWorkflowEdge(ctx, arg)
+}
+
+func (r *SQLCWorkflowRepository) ListWorkflowEdge(ctx context.Context, workflowID uuid.UUID) ([]db.WorkflowEdge, error) {
+	return r.q.ListWorkflowEdges(ctx, workflowID)
+}
+
+func (r *SQLCWorkflowRepository) DeleteWorkflowEdge(ctx context.Context, workflowID uuid.UUID) error {
+	return r.q.DeleteWorkflowEdges(ctx, workflowID)
 }

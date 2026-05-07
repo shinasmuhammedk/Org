@@ -72,8 +72,12 @@ func workflowRoutes(r *gin.Engine) {
 	auth.GET("/workflows", workflowHandler.ListWorkflows)
 	auth.DELETE("/workflows/:id", workflowHandler.DeleteWorkflow)
 
+	// Single step routes
 	auth.POST("/workflows/:id/steps", workflowHandler.CreateStep)
-	auth.GET("/workflows/:id/steps", workflowHandler.ListSteps)
+
+	// Canvas save/load routes
+	auth.PUT("/workflows/:id/steps", workflowHandler.SaveWorkflowSteps)
+	auth.GET("/workflows/:id/steps", workflowHandler.GetWorkflowSteps)
 
 	auth.POST("/workflows/:id/run", workflowHandler.RunWorkflow)
 	auth.GET("/workflows/:id/runs", workflowHandler.ListWorkflowRuns)

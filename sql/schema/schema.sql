@@ -40,6 +40,7 @@ CREATE TABLE workflows (
 CREATE TABLE workflow_steps (
     id UUID PRIMARY KEY,
     workflow_id UUID NOT NULL REFERENCES workflows(id) ON DELETE CASCADE,
+    frontend_node_id TEXT NOT NULL,
     step_order INT NOT NULL,
     step_type TEXT NOT NULL,
     config JSONB NOT NULL,
@@ -68,4 +69,14 @@ CREATE TABLE workflow_step_runs (
     started_at TIMESTAMP,
     finished_at TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+
+
+CREATE TABLE workflow_edges (
+    id UUID PRIMARY KEY,
+    workflow_id UUID NOT NULL REFERENCES workflows(id) ON DELETE CASCADE,
+    source_step_id UUID NOT NULL,
+    target_step_id UUID NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
 );

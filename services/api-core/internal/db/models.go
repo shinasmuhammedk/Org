@@ -47,6 +47,14 @@ type Workflow struct {
 	UpdatedAt   time.Time
 }
 
+type WorkflowEdge struct {
+	ID           uuid.UUID
+	WorkflowID   uuid.UUID
+	SourceStepID uuid.UUID
+	TargetStepID uuid.UUID
+	CreatedAt    sql.NullTime
+}
+
 type WorkflowRun struct {
 	ID           uuid.UUID
 	WorkflowID   uuid.UUID
@@ -59,12 +67,13 @@ type WorkflowRun struct {
 }
 
 type WorkflowStep struct {
-	ID         uuid.UUID
-	WorkflowID uuid.UUID
-	StepOrder  int32
-	StepType   string
-	Config     json.RawMessage
-	CreatedAt  time.Time
+	ID             uuid.UUID
+	WorkflowID     uuid.UUID
+	FrontendNodeID string
+	StepOrder      int32
+	StepType       string
+	Config         json.RawMessage
+	CreatedAt      time.Time
 }
 
 type WorkflowStepRun struct {

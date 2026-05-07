@@ -21,10 +21,11 @@ func NewWorkflowHandler(workflowService *service.WorkflowService) *WorkflowHandl
 	}
 }
 
-//
-// 🔹 WORKFLOW HANDLERS
-//
+type SaveWorkflowStepsRequest struct {
+	Steps []service.SaveWorkflowStepRequest `json:"steps"`
+}
 
+// CREATE WORKFLOW
 func (h *WorkflowHandler) CreateWorkflow(c *gin.Context) {
 	var body struct {
 		Name        string `json:"name"`
@@ -68,6 +69,7 @@ func (h *WorkflowHandler) CreateWorkflow(c *gin.Context) {
 	response.Created(c, "workflow created successfully", workflow)
 }
 
+// LIST WORKFLOWS
 func (h *WorkflowHandler) ListWorkflows(c *gin.Context) {
 	userIDValue, exists := c.Get("user_id")
 	if !exists {
@@ -81,11 +83,7 @@ func (h *WorkflowHandler) ListWorkflows(c *gin.Context) {
 		return
 	}
 
-	workflows, err := h.workflowService.ListWorkflow(
-		c.Request.Context(),
-		userID,
-	)
-
+	workflows, err := h.workflowService.ListWorkflow(c.Request.Context(), userID)
 	if err != nil {
 		response.InternalServerError(c, "failed to fetch workflows", err.Error())
 		return
@@ -94,6 +92,7 @@ func (h *WorkflowHandler) ListWorkflows(c *gin.Context) {
 	response.OK(c, "workflows fetched successfully", workflows)
 }
 
+// DELETE WORKFLOW
 func (h *WorkflowHandler) DeleteWorkflow(c *gin.Context) {
 	userIDValue, exists := c.Get("user_id")
 	if !exists {
@@ -113,12 +112,7 @@ func (h *WorkflowHandler) DeleteWorkflow(c *gin.Context) {
 		return
 	}
 
-	err = h.workflowService.DeleteWorkflow(
-		c.Request.Context(),
-		userID,
-		workflowID,
-	)
-
+	err = h.workflowService.DeleteWorkflow(c.Request.Context(), userID, workflowID)
 	if err != nil {
 		response.InternalServerError(c, "failed to delete workflow", err.Error())
 		return
@@ -127,10 +121,7 @@ func (h *WorkflowHandler) DeleteWorkflow(c *gin.Context) {
 	response.OK(c, "workflow deleted successfully", nil)
 }
 
-//
-// 🔹 STEP HANDLERS
-//
-
+// CREATE SINGLE STEP
 func (h *WorkflowHandler) CreateStep(c *gin.Context) {
 	var body struct {
 		StepOrder int32                  `json:"step_order"`
@@ -176,6 +167,7 @@ func (h *WorkflowHandler) CreateStep(c *gin.Context) {
 	response.Created(c, "workflow step created successfully", step)
 }
 
+// LIST STEPS
 func (h *WorkflowHandler) ListSteps(c *gin.Context) {
 	workflowID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -183,11 +175,7 @@ func (h *WorkflowHandler) ListSteps(c *gin.Context) {
 		return
 	}
 
-	steps, err := h.workflowService.ListSteps(
-		c.Request.Context(),
-		workflowID,
-	)
-
+	steps, err := h.workflowService.ListSteps(c.Request.Context(), workflowID)
 	if err != nil {
 		response.InternalServerError(c, "failed to fetch steps", err.Error())
 		return
@@ -196,8 +184,75 @@ func (h *WorkflowHandler) ListSteps(c *gin.Context) {
 	response.OK(c, "workflow steps fetched successfully", steps)
 }
 
-func (h *WorkflowHandler) RunWorkflow(c *gin.Context) {
+// SAVE CANVAS STEPS
+func (h *WorkflowHandler) SaveWorkflowSteps(c *gin.Context) {
+	workflowID, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		response.BadRequest(c, "invalid workflow id", err.Error())
+		return
+	}
 
+	userIDString := c.MustGet("user_id").(string)
+
+	userID, err := uuid.Parse(userIDString)
+	if err != nil {
+		response.Unauthorized(c, "invalid user")
+		return
+	}
+
+	var body SaveWorkflowStepsRequest
+	if err := c.ShouldBindJSON(&body); err != nil {
+		response.BadRequest(c, "invalid request body", err.Error())
+		return
+	}
+
+	err = h.workflowService.SaveWorkflowSteps(
+		c.Request.Context(),
+		workflowID,
+		userID,
+		body.Steps,
+	)
+
+	if err != nil {
+		response.InternalServerError(c, "failed to save workflow steps", err.Error())
+		return
+	}
+
+	response.OK(c, "workflow steps saved successfully", nil)
+}
+
+// GET CANVAS STEPS
+func (h *WorkflowHandler) GetWorkflowSteps(c *gin.Context) {
+	workflowID, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		response.BadRequest(c, "invalid workflow id", err.Error())
+		return
+	}
+
+	userIDString := c.MustGet("user_id").(string)
+
+	userID, err := uuid.Parse(userIDString)
+	if err != nil {
+		response.Unauthorized(c, "invalid user")
+		return
+	}
+
+	steps, err := h.workflowService.GetWorkflowSteps(
+		c.Request.Context(),
+		workflowID,
+		userID,
+	)
+
+	if err != nil {
+		response.InternalServerError(c, "failed to fetch workflow steps", err.Error())
+		return
+	}
+
+	response.OK(c, "workflow steps fetched successfully", steps)
+}
+
+// RUN WORKFLOW
+func (h *WorkflowHandler) RunWorkflow(c *gin.Context) {
 	workflowID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		response.BadRequest(c, "invalid workflow id", err.Error())
@@ -221,45 +276,44 @@ func (h *WorkflowHandler) RunWorkflow(c *gin.Context) {
 	response.OK(c, "workflow executed successfully", nil)
 }
 
+// LIST WORKFLOW RUNS
+func (h *WorkflowHandler) ListWorkflowRuns(c *gin.Context) {
+	workflowID, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		response.BadRequest(c, "invalid workflow id", err.Error())
+		return
+	}
 
-func (h *WorkflowHandler) ListWorkflowRuns(c *gin.Context){
-    workflowID, err := uuid.Parse(c.Param("id"))
-    if err != nil{
-        response.BadRequest(c, "invalid workflow id", err.Error())
-        return
-    }
-    
-    userIDString := c.MustGet("user_id").(string)
-    
-    userID, err := uuid.Parse(userIDString)
-    if err != nil{
-        response.Unauthorized(c, "invalid user")
-        return
-    }
-    
-    runs, err := h.workflowService.ListWorkflowRuns(c.Request.Context(), workflowID, userID)
-    if err != nil{
-        response.InternalServerError(c, "failed to fetch workflow runs", err.Error())
-        return
-    }
-    
-    response.OK(c, "workflow runs fetched successfully", runs)
+	userIDString := c.MustGet("user_id").(string)
+
+	userID, err := uuid.Parse(userIDString)
+	if err != nil {
+		response.Unauthorized(c, "invalid user")
+		return
+	}
+
+	runs, err := h.workflowService.ListWorkflowRuns(c.Request.Context(), workflowID, userID)
+	if err != nil {
+		response.InternalServerError(c, "failed to fetch workflow runs", err.Error())
+		return
+	}
+
+	response.OK(c, "workflow runs fetched successfully", runs)
 }
 
+// LIST STEP RUN LOGS
+func (h *WorkflowHandler) ListWorkflowStepRuns(c *gin.Context) {
+	runID, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		response.BadRequest(c, "invalid workflow run id", err.Error())
+		return
+	}
 
-func (h *WorkflowHandler) ListWorkflowStepRuns(c *gin.Context){
-    runID, err := uuid.Parse(c.Param("id"))
-    if err != nil{
-        response.BadRequest(c, "invalid workflow run id", err.Error())
-        return
-    }
-    
-    steps, err := h.workflowService.ListWorkflowStepRuns(c.Request.Context(), runID)
-    if err != nil{
-        response.InternalServerError(c, "failed to fetch step logs", err.Error())
-        return
-    }
-    
-    response.OK(c, "workflow step logs fetched successfully", steps)
+	steps, err := h.workflowService.ListWorkflowStepRuns(c.Request.Context(), runID)
+	if err != nil {
+		response.InternalServerError(c, "failed to fetch step logs", err.Error())
+		return
+	}
+
+	response.OK(c, "workflow step logs fetched successfully", steps)
 }
-

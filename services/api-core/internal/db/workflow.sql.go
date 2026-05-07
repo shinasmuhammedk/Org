@@ -55,6 +55,43 @@ func (q *Queries) CreateWorkflow(ctx context.Context, arg CreateWorkflowParams) 
 	return i, err
 }
 
+const createWorkflowEdge = `-- name: CreateWorkflowEdge :one
+INSERT INTO workflow_edges (
+    id,
+    workflow_id,
+    source_step_id,
+    target_step_id
+) VALUES (
+    $1, $2, $3, $4
+)
+RETURNING id, workflow_id, source_step_id, target_step_id, created_at
+`
+
+type CreateWorkflowEdgeParams struct {
+	ID           uuid.UUID
+	WorkflowID   uuid.UUID
+	SourceStepID uuid.UUID
+	TargetStepID uuid.UUID
+}
+
+func (q *Queries) CreateWorkflowEdge(ctx context.Context, arg CreateWorkflowEdgeParams) (WorkflowEdge, error) {
+	row := q.db.QueryRowContext(ctx, createWorkflowEdge,
+		arg.ID,
+		arg.WorkflowID,
+		arg.SourceStepID,
+		arg.TargetStepID,
+	)
+	var i WorkflowEdge
+	err := row.Scan(
+		&i.ID,
+		&i.WorkflowID,
+		&i.SourceStepID,
+		&i.TargetStepID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const createWorkflowRun = `-- name: CreateWorkflowRun :one
 INSERT INTO workflow_runs (
     id, workflow_id, user_id, status, started_at
@@ -94,25 +131,32 @@ func (q *Queries) CreateWorkflowRun(ctx context.Context, arg CreateWorkflowRunPa
 
 const createWorkflowStep = `-- name: CreateWorkflowStep :one
 INSERT INTO workflow_steps (
-    id, workflow_id, step_order, step_type, config
+    id,
+    workflow_id,
+    frontend_node_id,
+    step_order,
+    step_type,
+    config
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1, $2, $3, $4, $5, $6
 )
-RETURNING id, workflow_id, step_order, step_type, config, created_at
+RETURNING id, workflow_id, frontend_node_id, step_order, step_type, config, created_at
 `
 
 type CreateWorkflowStepParams struct {
-	ID         uuid.UUID
-	WorkflowID uuid.UUID
-	StepOrder  int32
-	StepType   string
-	Config     json.RawMessage
+	ID             uuid.UUID
+	WorkflowID     uuid.UUID
+	FrontendNodeID string
+	StepOrder      int32
+	StepType       string
+	Config         json.RawMessage
 }
 
 func (q *Queries) CreateWorkflowStep(ctx context.Context, arg CreateWorkflowStepParams) (WorkflowStep, error) {
 	row := q.db.QueryRowContext(ctx, createWorkflowStep,
 		arg.ID,
 		arg.WorkflowID,
+		arg.FrontendNodeID,
 		arg.StepOrder,
 		arg.StepType,
 		arg.Config,
@@ -121,6 +165,7 @@ func (q *Queries) CreateWorkflowStep(ctx context.Context, arg CreateWorkflowStep
 	err := row.Scan(
 		&i.ID,
 		&i.WorkflowID,
+		&i.FrontendNodeID,
 		&i.StepOrder,
 		&i.StepType,
 		&i.Config,
@@ -197,6 +242,26 @@ func (q *Queries) DeleteWorkflow(ctx context.Context, arg DeleteWorkflowParams) 
 	return err
 }
 
+const deleteWorkflowEdges = `-- name: DeleteWorkflowEdges :exec
+DELETE FROM workflow_edges
+WHERE workflow_id = $1
+`
+
+func (q *Queries) DeleteWorkflowEdges(ctx context.Context, workflowID uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteWorkflowEdges, workflowID)
+	return err
+}
+
+const deleteWorkflowSteps = `-- name: DeleteWorkflowSteps :exec
+DELETE FROM workflow_steps
+WHERE workflow_id = $1
+`
+
+func (q *Queries) DeleteWorkflowSteps(ctx context.Context, workflowID uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteWorkflowSteps, workflowID)
+	return err
+}
+
 const getWorkflowByID = `-- name: GetWorkflowByID :one
 SELECT id, user_id, name, description, trigger_type, is_active, created_at, updated_at FROM workflows
 WHERE id = $1 AND user_id = $2
@@ -247,6 +312,42 @@ func (q *Queries) ListWorkflowByUser(ctx context.Context, userID uuid.UUID) ([]W
 			&i.IsActive,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listWorkflowEdges = `-- name: ListWorkflowEdges :many
+SELECT id, workflow_id, source_step_id, target_step_id, created_at
+FROM workflow_edges
+WHERE workflow_id = $1
+ORDER BY created_at ASC
+`
+
+func (q *Queries) ListWorkflowEdges(ctx context.Context, workflowID uuid.UUID) ([]WorkflowEdge, error) {
+	rows, err := q.db.QueryContext(ctx, listWorkflowEdges, workflowID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []WorkflowEdge
+	for rows.Next() {
+		var i WorkflowEdge
+		if err := rows.Scan(
+			&i.ID,
+			&i.WorkflowID,
+			&i.SourceStepID,
+			&i.TargetStepID,
+			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -346,7 +447,7 @@ func (q *Queries) ListWorkflowStepRuns(ctx context.Context, workflowRunID uuid.U
 }
 
 const listWorkflowSteps = `-- name: ListWorkflowSteps :many
-SELECT id, workflow_id, step_order, step_type, config, created_at FROM workflow_steps
+SELECT id, workflow_id, frontend_node_id, step_order, step_type, config, created_at FROM workflow_steps
 WHERE workflow_id = $1
 ORDER BY step_order ASC
 `
@@ -363,6 +464,7 @@ func (q *Queries) ListWorkflowSteps(ctx context.Context, workflowID uuid.UUID) (
 		if err := rows.Scan(
 			&i.ID,
 			&i.WorkflowID,
+			&i.FrontendNodeID,
 			&i.StepOrder,
 			&i.StepType,
 			&i.Config,

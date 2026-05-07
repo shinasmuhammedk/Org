@@ -2,6 +2,7 @@ package executor
 
 import (
 	"errors"
+
 	"org/api-core/internal/db"
 )
 
@@ -11,13 +12,12 @@ func NewExecutor() *Executor {
 	return &Executor{}
 }
 
-func (e *Executor) ExecuteStep(step db.WorkflowStep) error {
+func (e *Executor) ExecuteStep(step db.WorkflowStep) ([]byte, error) {
 	switch step.StepType {
-
 	case "http_request":
 		return e.executeHTTPRequest(step.Config)
 
 	default:
-		return errors.New("unsupported step type: " + step.StepType)
+		return nil, errors.New("unsupported step type: " + step.StepType)
 	}
 }
