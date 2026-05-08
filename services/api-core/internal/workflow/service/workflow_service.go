@@ -233,7 +233,7 @@ func (s *WorkflowService) RunWorkflow(ctx context.Context, workflowID uuid.UUID,
 		}
 
 		for _, nextStepID := range nextSteps[stepID] {
-			if err := executeNode(execCtx,nextStepID); err != nil {
+			if err := executeNode(execCtx, nextStepID); err != nil {
 				return err
 			}
 		}
@@ -297,6 +297,11 @@ func (s *WorkflowService) SaveWorkflowSteps(
 		return err
 	}
 
+	err = s.repo.DeleteWebhookTriggersByWorkflow(ctx, workflowID)
+	if err != nil {
+		return err
+	}
+
 	err = s.repo.DeleteWorkflowSteps(ctx, workflowID)
 	if err != nil {
 		return err
@@ -307,13 +312,50 @@ func (s *WorkflowService) SaveWorkflowSteps(
 	for _, step := range steps {
 		stepID := uuid.New()
 
+		config := step.Config
+
+		if step.StepType == "webhook_trigger" {
+			webhookURLID := uuid.NewString()
+
+			var configMap map[string]interface{}
+
+			if len(config) > 0 {
+				_ = json.Unmarshal(config, &configMap)
+			}
+
+			if configMap == nil {
+				configMap = make(map[string]interface{})
+			}
+
+			configMap["webhook_url_id"] = webhookURLID
+			configMap["webhook_url"] = "http://localhost:8080/webhooks/" + webhookURLID
+
+			updatedConfig, err := json.Marshal(configMap)
+			if err != nil {
+				return err
+			}
+
+			config = updatedConfig
+
+			_, err = s.repo.CreateWebhookTrigger(ctx, db.CreateWebhookTriggerParams{
+				ID:             uuid.New(),
+				WorkflowID:     workflowID,
+				UserID:         userID,
+				WebhookUrlID:   webhookURLID,
+				FrontendNodeID: step.FrontendNodeID,
+			})
+			if err != nil {
+				return err
+			}
+		}
+
 		_, err := s.repo.CreateWorkflowStep(ctx, db.CreateWorkflowStepParams{
 			ID:             stepID,
 			WorkflowID:     workflowID,
 			FrontendNodeID: step.FrontendNodeID,
 			StepOrder:      int32(step.StepOrder),
 			StepType:       step.StepType,
-			Config:         step.Config,
+			Config:         config,
 		})
 		if err != nil {
 			return err
@@ -378,4 +420,14 @@ func (s *WorkflowService) GetWorkflowEdges(
 	}
 
 	return s.repo.ListWorkflowEdges(ctx, workflowID)
+}
+
+func (s *WorkflowService) RunWorkflowFromWebhook(ctx context.Context, webhookID string, payload map[string]interface{}) (uuid.UUID, error) {
+	trigger, err := s.repo.GetWebhookTriggerByURLID(ctx, webhookID)
+
+	if err != nil {
+		return uuid.Nil, err
+	}
+
+	return s.RunWorkflow(ctx, trigger.WorkflowID, trigger.UserID)
 }

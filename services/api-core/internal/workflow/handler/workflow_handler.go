@@ -349,3 +349,24 @@ func (h *WorkflowHandler) GetWorkflowEdges(c *gin.Context) {
 
 	response.OK(c, "workflow edges fetched successfully", edges)
 }
+
+func (h *WorkflowHandler) HandleWebhookTrigger(c *gin.Context) {
+	webhookId := c.Param("webhookID")
+
+	var payload map[string]interface{}
+
+	if err := c.ShouldBindJSON(&payload); err != nil {
+		response.BadRequest(c, "invalid webhook payload", err.Error())
+		return
+	}
+
+	runID, err := h.workflowService.RunWorkflowFromWebhook(c.Request.Context(), webhookId, payload)
+	if err != nil {
+		response.InternalServerError(c, "webhook execution failed", err.Error())
+        return
+	}
+    
+    response.OK(c, "webhook recieved", gin.H{
+        "run_id":runID,
+    })
+}

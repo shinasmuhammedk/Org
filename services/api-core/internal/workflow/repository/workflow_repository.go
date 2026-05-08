@@ -32,7 +32,11 @@ type WorkflowRepository interface {
 	CreateWorkflowEdge(ctx context.Context, arg db.CreateWorkflowEdgeParams) (db.WorkflowEdge, error)
 	ListWorkflowEdges(ctx context.Context, workflowID uuid.UUID) ([]db.ListWorkflowEdgesRow, error)
 	DeleteWorkflowEdges(ctx context.Context, workflowID uuid.UUID) error
-    
-    
-    ListWorkflowEdgesForExecution(ctx context.Context, workflowID uuid.UUID) ([]db.WorkflowEdge, error)
+
+	ListWorkflowEdgesForExecution(ctx context.Context, workflowID uuid.UUID) ([]db.WorkflowEdge, error)
+
+	CreateWebhookTrigger(ctx context.Context, arg db.CreateWebhookTriggerParams) (db.WebhookTrigger, error)
+	GetWebhookTriggerByURLID(ctx context.Context, webhookURLID string) (db.WebhookTrigger, error)
+	DeleteWebhookTriggersByWorkflow(ctx context.Context, workflowID uuid.UUID) error
+	ListWebhookTriggersByWorkflow(ctx context.Context, workflowID uuid.UUID) ([]db.WebhookTrigger, error)
 }

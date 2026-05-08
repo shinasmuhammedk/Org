@@ -132,3 +132,28 @@ SELECT *
 FROM workflow_edges
 WHERE workflow_id = $1
 ORDER BY created_at ASC;
+
+
+-- name: CreateWebhookTrigger :one
+INSERT INTO webhook_triggers (
+    id,
+    workflow_id,
+    user_id,
+    webhook_url_id,
+    frontend_node_id
+) VALUES (
+    $1, $2, $3, $4, $5
+)
+RETURNING *;
+
+-- name: GetWebhookTriggerByURLID :one
+SELECT * FROM webhook_triggers
+WHERE webhook_url_id = $1;
+
+-- name: DeleteWebhookTriggersByWorkflow :exec
+DELETE FROM webhook_triggers
+WHERE workflow_id = $1;
+
+-- name: ListWebhookTriggersByWorkflow :many
+SELECT * FROM webhook_triggers
+WHERE workflow_id = $1;

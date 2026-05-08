@@ -66,6 +66,8 @@ func workflowRoutes(r *gin.Engine) {
 	workflowService := workflowServicePkg.NewWorkflowService(workflowRepo)
 	workflowHandler := workflowHandlerPkg.NewWorkflowHandler(workflowService)
 
+	r.POST("/webhooks/:webhookID", workflowHandler.HandleWebhookTrigger)
+
 	auth := r.Group("/", middleware.AuthMiddleware())
 
 	auth.POST("/workflows", workflowHandler.CreateWorkflow)
@@ -82,5 +84,5 @@ func workflowRoutes(r *gin.Engine) {
 	auth.POST("/workflows/:id/run", workflowHandler.RunWorkflow)
 	auth.GET("/workflows/:id/runs", workflowHandler.ListWorkflowRuns)
 	auth.GET("/workflow-runs/:id/steps", workflowHandler.ListWorkflowStepRuns)
-    auth.GET("/workflows/:id/edges", workflowHandler.GetWorkflowEdges)
+	auth.GET("/workflows/:id/edges", workflowHandler.GetWorkflowEdges)
 }

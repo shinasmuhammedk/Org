@@ -82,3 +82,22 @@ func (r *SQLCWorkflowRepository) DeleteWorkflowEdges(ctx context.Context, workfl
 func (r *SQLCWorkflowRepository) ListWorkflowEdgesForExecution(ctx context.Context, workflowID uuid.UUID) ([]db.WorkflowEdge, error) {
 	return r.q.ListWorkflowEdgesForExecution(ctx, workflowID)
 }
+
+
+
+
+func (r *SQLCWorkflowRepository)CreateWebhookTrigger(ctx context.Context,arg db.CreateWebhookTriggerParams)(db.WebhookTrigger,error){
+    return r.q.CreateWebhookTrigger(ctx, arg)
+}
+
+func (r *SQLCWorkflowRepository) GetWebhookTriggerByURLID(ctx context.Context,webhookURLID string)(db.WebhookTrigger,error){
+    return r.q.GetWebhookTriggerByURLID(ctx, webhookURLID)
+}
+
+func (r *SQLCWorkflowRepository)DeleteWebhookTriggersByWorkflow(ctx context.Context,workflowID uuid.UUID)error{
+    return r.q.DeleteWebhookTriggersByWorkflow(ctx, workflowID)
+}
+
+func (r *SQLCWorkflowRepository) ListWebhookTriggersByWorkflow(ctx context.Context, workflowID uuid.UUID)([]db.WebhookTrigger,error){
+    return r.q.ListWebhookTriggersByWorkflow(ctx, workflowID)
+}

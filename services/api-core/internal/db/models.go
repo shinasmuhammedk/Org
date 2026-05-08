@@ -36,6 +36,15 @@ type User struct {
 	CreatedAt  sql.NullTime
 }
 
+type WebhookTrigger struct {
+	ID             uuid.UUID
+	WorkflowID     uuid.UUID
+	UserID         uuid.UUID
+	WebhookUrlID   string
+	FrontendNodeID string
+	CreatedAt      sql.NullTime
+}
+
 type Workflow struct {
 	ID          uuid.UUID
 	UserID      uuid.UUID

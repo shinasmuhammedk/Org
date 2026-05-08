@@ -14,6 +14,47 @@ import (
 	"github.com/sqlc-dev/pqtype"
 )
 
+const createWebhookTrigger = `-- name: CreateWebhookTrigger :one
+INSERT INTO webhook_triggers (
+    id,
+    workflow_id,
+    user_id,
+    webhook_url_id,
+    frontend_node_id
+) VALUES (
+    $1, $2, $3, $4, $5
+)
+RETURNING id, workflow_id, user_id, webhook_url_id, frontend_node_id, created_at
+`
+
+type CreateWebhookTriggerParams struct {
+	ID             uuid.UUID
+	WorkflowID     uuid.UUID
+	UserID         uuid.UUID
+	WebhookUrlID   string
+	FrontendNodeID string
+}
+
+func (q *Queries) CreateWebhookTrigger(ctx context.Context, arg CreateWebhookTriggerParams) (WebhookTrigger, error) {
+	row := q.db.QueryRowContext(ctx, createWebhookTrigger,
+		arg.ID,
+		arg.WorkflowID,
+		arg.UserID,
+		arg.WebhookUrlID,
+		arg.FrontendNodeID,
+	)
+	var i WebhookTrigger
+	err := row.Scan(
+		&i.ID,
+		&i.WorkflowID,
+		&i.UserID,
+		&i.WebhookUrlID,
+		&i.FrontendNodeID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const createWorkflow = `-- name: CreateWorkflow :one
 INSERT INTO workflows (
     id, user_id, name, description, trigger_type, is_active
@@ -227,6 +268,16 @@ func (q *Queries) CreateWorkflowStepRun(ctx context.Context, arg CreateWorkflowS
 	return i, err
 }
 
+const deleteWebhookTriggersByWorkflow = `-- name: DeleteWebhookTriggersByWorkflow :exec
+DELETE FROM webhook_triggers
+WHERE workflow_id = $1
+`
+
+func (q *Queries) DeleteWebhookTriggersByWorkflow(ctx context.Context, workflowID uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteWebhookTriggersByWorkflow, workflowID)
+	return err
+}
+
 const deleteWorkflow = `-- name: DeleteWorkflow :exec
 DELETE FROM workflows
 WHERE id = $1 AND user_id = $2
@@ -262,6 +313,25 @@ func (q *Queries) DeleteWorkflowSteps(ctx context.Context, workflowID uuid.UUID)
 	return err
 }
 
+const getWebhookTriggerByURLID = `-- name: GetWebhookTriggerByURLID :one
+SELECT id, workflow_id, user_id, webhook_url_id, frontend_node_id, created_at FROM webhook_triggers
+WHERE webhook_url_id = $1
+`
+
+func (q *Queries) GetWebhookTriggerByURLID(ctx context.Context, webhookUrlID string) (WebhookTrigger, error) {
+	row := q.db.QueryRowContext(ctx, getWebhookTriggerByURLID, webhookUrlID)
+	var i WebhookTrigger
+	err := row.Scan(
+		&i.ID,
+		&i.WorkflowID,
+		&i.UserID,
+		&i.WebhookUrlID,
+		&i.FrontendNodeID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getWorkflowByID = `-- name: GetWorkflowByID :one
 SELECT id, user_id, name, description, trigger_type, is_active, created_at, updated_at FROM workflows
 WHERE id = $1 AND user_id = $2
@@ -286,6 +356,41 @@ func (q *Queries) GetWorkflowByID(ctx context.Context, arg GetWorkflowByIDParams
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const listWebhookTriggersByWorkflow = `-- name: ListWebhookTriggersByWorkflow :many
+SELECT id, workflow_id, user_id, webhook_url_id, frontend_node_id, created_at FROM webhook_triggers
+WHERE workflow_id = $1
+`
+
+func (q *Queries) ListWebhookTriggersByWorkflow(ctx context.Context, workflowID uuid.UUID) ([]WebhookTrigger, error) {
+	rows, err := q.db.QueryContext(ctx, listWebhookTriggersByWorkflow, workflowID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []WebhookTrigger
+	for rows.Next() {
+		var i WebhookTrigger
+		if err := rows.Scan(
+			&i.ID,
+			&i.WorkflowID,
+			&i.UserID,
+			&i.WebhookUrlID,
+			&i.FrontendNodeID,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listWorkflowByUser = `-- name: ListWorkflowByUser :many
