@@ -71,10 +71,14 @@ func (r *SQLCWorkflowRepository) CreateWorkflowEdge(ctx context.Context, arg db.
 	return r.q.CreateWorkflowEdge(ctx, arg)
 }
 
-func (r *SQLCWorkflowRepository) ListWorkflowEdge(ctx context.Context, workflowID uuid.UUID) ([]db.WorkflowEdge, error) {
+func (r *SQLCWorkflowRepository) ListWorkflowEdges(ctx context.Context, workflowID uuid.UUID) ([]db.ListWorkflowEdgesRow, error) {
 	return r.q.ListWorkflowEdges(ctx, workflowID)
 }
 
-func (r *SQLCWorkflowRepository) DeleteWorkflowEdge(ctx context.Context, workflowID uuid.UUID) error {
+func (r *SQLCWorkflowRepository) DeleteWorkflowEdges(ctx context.Context, workflowID uuid.UUID) error {
 	return r.q.DeleteWorkflowEdges(ctx, workflowID)
+}
+
+func (r *SQLCWorkflowRepository) ListWorkflowEdgesForExecution(ctx context.Context, workflowID uuid.UUID) ([]db.WorkflowEdge, error) {
+	return r.q.ListWorkflowEdgesForExecution(ctx, workflowID)
 }

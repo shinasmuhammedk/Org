@@ -82,4 +82,5 @@ func workflowRoutes(r *gin.Engine) {
 	auth.POST("/workflows/:id/run", workflowHandler.RunWorkflow)
 	auth.GET("/workflows/:id/runs", workflowHandler.ListWorkflowRuns)
 	auth.GET("/workflow-runs/:id/steps", workflowHandler.ListWorkflowStepRuns)
+    auth.GET("/workflows/:id/edges", workflowHandler.GetWorkflowEdges)
 }

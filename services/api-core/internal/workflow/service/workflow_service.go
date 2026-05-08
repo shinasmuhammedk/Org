@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/sqlc-dev/pqtype"
@@ -28,8 +30,14 @@ type SaveWorkflowStepRequest struct {
 	Config         json.RawMessage `json:"config"`
 }
 
+type SaveWorkflowEdgeRequest struct {
+	Source string `json:"source"`
+	Target string `json:"target"`
+}
+
 type SaveWorkflowStepsRequest struct {
 	Steps []SaveWorkflowStepRequest `json:"steps"`
+	Edges []SaveWorkflowEdgeRequest `json:"edges"`
 }
 
 //
@@ -84,7 +92,7 @@ func (s *WorkflowService) ListSteps(
 	return s.repo.ListWorkflowSteps(ctx, workflowID)
 }
 
-func (s *WorkflowService) RunWorkflow(ctx context.Context, workflowID uuid.UUID, userID uuid.UUID) error {
+func (s *WorkflowService) RunWorkflow(ctx context.Context, workflowID uuid.UUID, userID uuid.UUID) (uuid.UUID, error) {
 	runID := uuid.New()
 
 	_, err := s.repo.CreateWorkflowRun(ctx, db.CreateWorkflowRunParams{
@@ -94,31 +102,84 @@ func (s *WorkflowService) RunWorkflow(ctx context.Context, workflowID uuid.UUID,
 		Status:     "running",
 	})
 	if err != nil {
-		return err
+		return runID, err
 	}
 
-	steps, err := s.repo.ListWorkflowSteps(ctx, workflowID)
-	if err != nil {
-		errMsg := err.Error()
-
+	failRun := func(execErr error) error {
 		_ = s.repo.UpdateWorkflowRunStatus(ctx, db.UpdateWorkflowRunStatusParams{
 			ID:     runID,
 			Status: "failed",
 			ErrorMessage: sql.NullString{
-				String: errMsg,
+				String: execErr.Error(),
 				Valid:  true,
 			},
 		})
+		return execErr
+	}
 
-		return err
+	steps, err := s.repo.ListWorkflowSteps(ctx, workflowID)
+	if err != nil {
+		return runID, failRun(err)
+	}
+
+	edges, err := s.repo.ListWorkflowEdgesForExecution(ctx, workflowID)
+	if err != nil {
+		return runID, failRun(err)
+	}
+
+	if len(steps) == 0 {
+		return runID, failRun(errors.New("workflow has no steps"))
+	}
+
+	stepMap := make(map[uuid.UUID]db.WorkflowStep)
+	incomingCount := make(map[uuid.UUID]int)
+	nextSteps := make(map[uuid.UUID][]uuid.UUID)
+
+	for _, step := range steps {
+		stepMap[step.ID] = step
+		incomingCount[step.ID] = 0
+	}
+
+	for _, edge := range edges {
+		nextSteps[edge.SourceStepID] = append(nextSteps[edge.SourceStepID], edge.TargetStepID)
+		incomingCount[edge.TargetStepID]++
+	}
+
+	var startStepID uuid.UUID
+	foundStart := false
+
+	for _, step := range steps {
+		if incomingCount[step.ID] == 0 {
+			startStepID = step.ID
+			foundStart = true
+			break
+		}
+	}
+
+	if !foundStart {
+		return runID, failRun(errors.New("no start node found"))
 	}
 
 	exec := executor.NewExecutor()
+	visited := make(map[uuid.UUID]bool)
 
-	for _, step := range steps {
+	var executeNode func(execCtx context.Context, stepID uuid.UUID) error
+
+	executeNode = func(execCtx context.Context, stepID uuid.UUID) error {
+		if visited[stepID] {
+			return nil
+		}
+
+		step, ok := stepMap[stepID]
+		if !ok {
+			return errors.New("step not found in workflow")
+		}
+
+		visited[stepID] = true
+
 		stepRunID := uuid.New()
 
-		_, err := s.repo.CreateWorkflowStepRun(ctx, db.CreateWorkflowStepRunParams{
+		_, err := s.repo.CreateWorkflowStepRun(execCtx, db.CreateWorkflowStepRunParams{
 			ID:             stepRunID,
 			WorkflowRunID:  runID,
 			WorkflowStepID: step.ID,
@@ -128,8 +189,7 @@ func (s *WorkflowService) RunWorkflow(ctx context.Context, workflowID uuid.UUID,
 				Valid:      true,
 			},
 			Output: pqtype.NullRawMessage{
-				RawMessage: step.Config,
-				Valid:      true,
+				Valid: false,
 			},
 			ErrorMessage: sql.NullString{
 				Valid: false,
@@ -141,26 +201,15 @@ func (s *WorkflowService) RunWorkflow(ctx context.Context, workflowID uuid.UUID,
 
 		output, err := exec.ExecuteStep(step)
 		if err != nil {
-			errMsg := err.Error()
-
-			_ = s.repo.UpdateWorkflowStepRunStatus(ctx, db.UpdateWorkflowStepRunStatusParams{
+			_ = s.repo.UpdateWorkflowStepRunStatus(execCtx, db.UpdateWorkflowStepRunStatusParams{
 				ID:     stepRunID,
 				Status: "failed",
 				Output: pqtype.NullRawMessage{
 					RawMessage: output,
-					Valid:      true,
+					Valid:      output != nil,
 				},
 				ErrorMessage: sql.NullString{
-					String: errMsg,
-					Valid:  true,
-				},
-			})
-
-			_ = s.repo.UpdateWorkflowRunStatus(ctx, db.UpdateWorkflowRunStatusParams{
-				ID:     runID,
-				Status: "failed",
-				ErrorMessage: sql.NullString{
-					String: errMsg,
+					String: err.Error(),
 					Valid:  true,
 				},
 			})
@@ -168,11 +217,11 @@ func (s *WorkflowService) RunWorkflow(ctx context.Context, workflowID uuid.UUID,
 			return err
 		}
 
-		err = s.repo.UpdateWorkflowStepRunStatus(ctx, db.UpdateWorkflowStepRunStatusParams{
+		err = s.repo.UpdateWorkflowStepRunStatus(execCtx, db.UpdateWorkflowStepRunStatusParams{
 			ID:     stepRunID,
 			Status: "success",
 			Output: pqtype.NullRawMessage{
-				RawMessage: step.Config,
+				RawMessage: output,
 				Valid:      true,
 			},
 			ErrorMessage: sql.NullString{
@@ -182,20 +231,39 @@ func (s *WorkflowService) RunWorkflow(ctx context.Context, workflowID uuid.UUID,
 		if err != nil {
 			return err
 		}
+
+		for _, nextStepID := range nextSteps[stepID] {
+			if err := executeNode(execCtx,nextStepID); err != nil {
+				return err
+			}
+		}
+
+		return nil
 	}
 
-	err = s.repo.UpdateWorkflowRunStatus(ctx, db.UpdateWorkflowRunStatusParams{
-		ID:     runID,
-		Status: "success",
-		ErrorMessage: sql.NullString{
-			Valid: false,
-		},
-	})
-	if err != nil {
-		return err
-	}
+	go func() {
 
-	return nil
+		bgCtx := context.Background()
+
+		if err := executeNode(bgCtx, startStepID); err != nil {
+			_ = failRun(err)
+			return
+		}
+
+		_ = s.repo.UpdateWorkflowRunStatus(
+			context.Background(),
+			db.UpdateWorkflowRunStatusParams{
+				ID:     runID,
+				Status: "success",
+				ErrorMessage: sql.NullString{
+					Valid: false,
+				},
+			},
+		)
+
+	}()
+
+	return runID, nil
 }
 
 func (s *WorkflowService) ListWorkflowRuns(ctx context.Context, workflowID, userID uuid.UUID) ([]db.WorkflowRun, error) {
@@ -214,6 +282,7 @@ func (s *WorkflowService) SaveWorkflowSteps(
 	workflowID uuid.UUID,
 	userID uuid.UUID,
 	steps []SaveWorkflowStepRequest,
+	edges []SaveWorkflowEdgeRequest,
 ) error {
 	_, err := s.repo.GetWorkflowByID(ctx, db.GetWorkflowByIDParams{
 		ID:     workflowID,
@@ -223,19 +292,52 @@ func (s *WorkflowService) SaveWorkflowSteps(
 		return err
 	}
 
+	err = s.repo.DeleteWorkflowEdges(ctx, workflowID)
+	if err != nil {
+		return err
+	}
+
 	err = s.repo.DeleteWorkflowSteps(ctx, workflowID)
 	if err != nil {
 		return err
 	}
 
+	nodeIDToStepID := make(map[string]uuid.UUID)
+
 	for _, step := range steps {
+		stepID := uuid.New()
+
 		_, err := s.repo.CreateWorkflowStep(ctx, db.CreateWorkflowStepParams{
-			ID:             uuid.New(),
+			ID:             stepID,
 			WorkflowID:     workflowID,
 			FrontendNodeID: step.FrontendNodeID,
 			StepOrder:      int32(step.StepOrder),
 			StepType:       step.StepType,
 			Config:         step.Config,
+		})
+		if err != nil {
+			return err
+		}
+
+		nodeIDToStepID[step.FrontendNodeID] = stepID
+	}
+
+	for _, edge := range edges {
+		sourceStepID, ok := nodeIDToStepID[edge.Source]
+		if !ok {
+			return fmt.Errorf("source node not found: %s", edge.Source)
+		}
+
+		targetStepID, ok := nodeIDToStepID[edge.Target]
+		if !ok {
+			return fmt.Errorf("target node not found: %s", edge.Target)
+		}
+
+		_, err := s.repo.CreateWorkflowEdge(ctx, db.CreateWorkflowEdgeParams{
+			ID:           uuid.New(),
+			WorkflowID:   workflowID,
+			SourceStepID: sourceStepID,
+			TargetStepID: targetStepID,
 		})
 		if err != nil {
 			return err
@@ -259,4 +361,21 @@ func (s *WorkflowService) GetWorkflowSteps(
 	}
 
 	return s.repo.ListWorkflowSteps(ctx, workflowID)
+}
+
+func (s *WorkflowService) GetWorkflowEdges(
+	ctx context.Context,
+	workflowID uuid.UUID,
+	userID uuid.UUID,
+) ([]db.ListWorkflowEdgesRow, error) {
+
+	_, err := s.repo.GetWorkflowByID(ctx, db.GetWorkflowByIDParams{
+		ID:     workflowID,
+		UserID: userID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return s.repo.ListWorkflowEdges(ctx, workflowID)
 }

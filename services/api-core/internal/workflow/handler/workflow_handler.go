@@ -23,6 +23,7 @@ func NewWorkflowHandler(workflowService *service.WorkflowService) *WorkflowHandl
 
 type SaveWorkflowStepsRequest struct {
 	Steps []service.SaveWorkflowStepRequest `json:"steps"`
+	Edges []service.SaveWorkflowEdgeRequest `json:"edges"`
 }
 
 // CREATE WORKFLOW
@@ -211,6 +212,7 @@ func (h *WorkflowHandler) SaveWorkflowSteps(c *gin.Context) {
 		workflowID,
 		userID,
 		body.Steps,
+		body.Edges,
 	)
 
 	if err != nil {
@@ -267,13 +269,15 @@ func (h *WorkflowHandler) RunWorkflow(c *gin.Context) {
 		return
 	}
 
-	err = h.workflowService.RunWorkflow(c.Request.Context(), workflowID, userID)
+	runID, err := h.workflowService.RunWorkflow(c.Request.Context(), workflowID, userID)
 	if err != nil {
 		response.InternalServerError(c, "workflow execution failed", err.Error())
 		return
 	}
 
-	response.OK(c, "workflow executed successfully", nil)
+	response.OK(c, "workflow executed successfully", gin.H{
+		"run_id": runID,
+	})
 }
 
 // LIST WORKFLOW RUNS
@@ -316,4 +320,32 @@ func (h *WorkflowHandler) ListWorkflowStepRuns(c *gin.Context) {
 	}
 
 	response.OK(c, "workflow step logs fetched successfully", steps)
+}
+
+func (h *WorkflowHandler) GetWorkflowEdges(c *gin.Context) {
+	workflowID, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		response.BadRequest(c, "invalid workflow id", err.Error())
+		return
+	}
+
+	userIDString := c.MustGet("user_id").(string)
+
+	userID, err := uuid.Parse(userIDString)
+	if err != nil {
+		response.Unauthorized(c, "invalid user")
+		return
+	}
+
+	edges, err := h.workflowService.GetWorkflowEdges(
+		c.Request.Context(),
+		workflowID,
+		userID,
+	)
+	if err != nil {
+		response.InternalServerError(c, "failed to fetch workflow edges", err.Error())
+		return
+	}
+
+	response.OK(c, "workflow edges fetched successfully", edges)
 }

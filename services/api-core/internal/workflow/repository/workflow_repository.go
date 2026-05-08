@@ -30,6 +30,9 @@ type WorkflowRepository interface {
 
 	//Edges
 	CreateWorkflowEdge(ctx context.Context, arg db.CreateWorkflowEdgeParams) (db.WorkflowEdge, error)
-	ListWorkflowEdge(ctx context.Context, workflowID uuid.UUID) ([]db.WorkflowEdge, error)
-	DeleteWorkflowEdge(ctx context.Context, workflowID uuid.UUID) error
+	ListWorkflowEdges(ctx context.Context, workflowID uuid.UUID) ([]db.ListWorkflowEdgesRow, error)
+	DeleteWorkflowEdges(ctx context.Context, workflowID uuid.UUID) error
+    
+    
+    ListWorkflowEdgesForExecution(ctx context.Context, workflowID uuid.UUID) ([]db.WorkflowEdge, error)
 }

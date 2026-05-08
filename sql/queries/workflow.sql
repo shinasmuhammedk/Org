@@ -108,12 +108,27 @@ RETURNING *;
 
 
 -- name: ListWorkflowEdges :many
-SELECT *
-FROM workflow_edges
-WHERE workflow_id = $1
-ORDER BY created_at ASC;
-
+SELECT
+    we.id,
+    we.workflow_id,
+    source_step.frontend_node_id AS source_frontend_node_id,
+    target_step.frontend_node_id AS target_frontend_node_id,
+    we.created_at
+FROM workflow_edges we
+JOIN workflow_steps source_step
+    ON source_step.id = we.source_step_id
+JOIN workflow_steps target_step
+    ON target_step.id = we.target_step_id
+WHERE we.workflow_id = $1
+ORDER BY we.created_at ASC;
 
 -- name: DeleteWorkflowEdges :exec
 DELETE FROM workflow_edges
 WHERE workflow_id = $1;
+
+
+-- name: ListWorkflowEdgesForExecution :many
+SELECT *
+FROM workflow_edges
+WHERE workflow_id = $1
+ORDER BY created_at ASC;

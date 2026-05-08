@@ -327,14 +327,67 @@ func (q *Queries) ListWorkflowByUser(ctx context.Context, userID uuid.UUID) ([]W
 }
 
 const listWorkflowEdges = `-- name: ListWorkflowEdges :many
+SELECT
+    we.id,
+    we.workflow_id,
+    source_step.frontend_node_id AS source_frontend_node_id,
+    target_step.frontend_node_id AS target_frontend_node_id,
+    we.created_at
+FROM workflow_edges we
+JOIN workflow_steps source_step
+    ON source_step.id = we.source_step_id
+JOIN workflow_steps target_step
+    ON target_step.id = we.target_step_id
+WHERE we.workflow_id = $1
+ORDER BY we.created_at ASC
+`
+
+type ListWorkflowEdgesRow struct {
+	ID                   uuid.UUID
+	WorkflowID           uuid.UUID
+	SourceFrontendNodeID string
+	TargetFrontendNodeID string
+	CreatedAt            sql.NullTime
+}
+
+func (q *Queries) ListWorkflowEdges(ctx context.Context, workflowID uuid.UUID) ([]ListWorkflowEdgesRow, error) {
+	rows, err := q.db.QueryContext(ctx, listWorkflowEdges, workflowID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListWorkflowEdgesRow
+	for rows.Next() {
+		var i ListWorkflowEdgesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.WorkflowID,
+			&i.SourceFrontendNodeID,
+			&i.TargetFrontendNodeID,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listWorkflowEdgesForExecution = `-- name: ListWorkflowEdgesForExecution :many
 SELECT id, workflow_id, source_step_id, target_step_id, created_at
 FROM workflow_edges
 WHERE workflow_id = $1
 ORDER BY created_at ASC
 `
 
-func (q *Queries) ListWorkflowEdges(ctx context.Context, workflowID uuid.UUID) ([]WorkflowEdge, error) {
-	rows, err := q.db.QueryContext(ctx, listWorkflowEdges, workflowID)
+func (q *Queries) ListWorkflowEdgesForExecution(ctx context.Context, workflowID uuid.UUID) ([]WorkflowEdge, error) {
+	rows, err := q.db.QueryContext(ctx, listWorkflowEdgesForExecution, workflowID)
 	if err != nil {
 		return nil, err
 	}
