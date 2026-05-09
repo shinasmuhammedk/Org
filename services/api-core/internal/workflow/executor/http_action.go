@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func (e *Executor) executeHTTPRequest(config []byte) ([]byte, error) {
+func (e *Executor) executeHTTPRequest(config []byte, input []byte) ([]byte, error) {
 	var cfg struct {
 		Method string          `json:"method"`
 		URL    string          `json:"url"`
@@ -19,6 +19,29 @@ func (e *Executor) executeHTTPRequest(config []byte) ([]byte, error) {
 
 	if err := json.Unmarshal(config, &cfg); err != nil {
 		return nil, err
+	}
+
+	if len(input) > 0 && len(cfg.Body) > 0 {
+		var inputMap map[string]interface{}
+
+		if err := json.Unmarshal(input, &inputMap); err == nil {
+			bodyString := string(cfg.Body)
+
+			for key, value := range inputMap {
+				placeholder := "{{trigger." + key + "}}"
+
+				valueBytes, _ := json.Marshal(value)
+				valueString := string(valueBytes)
+
+				if strValue, ok := value.(string); ok {
+					valueString = strValue
+				}
+
+				bodyString = strings.ReplaceAll(bodyString, placeholder, valueString)
+			}
+
+			cfg.Body = json.RawMessage(bodyString)
+		}
 	}
 
 	if cfg.URL == "" {
