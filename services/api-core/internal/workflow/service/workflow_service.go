@@ -31,8 +31,9 @@ type SaveWorkflowStepRequest struct {
 }
 
 type SaveWorkflowEdgeRequest struct {
-	Source string `json:"source"`
-	Target string `json:"target"`
+	Source          string `json:"source"`
+	Target          string `json:"target"`
+	ConditionBranch string `json:"condition_branch"`
 }
 
 type SaveWorkflowStepsRequest struct {
@@ -380,6 +381,10 @@ func (s *WorkflowService) SaveWorkflowSteps(
 			WorkflowID:   workflowID,
 			SourceStepID: sourceStepID,
 			TargetStepID: targetStepID,
+			ConditionBranch: sql.NullString{
+				String: edge.ConditionBranch,
+				Valid:  edge.ConditionBranch != "",
+			},
 		})
 		if err != nil {
 			return err
@@ -421,7 +426,6 @@ func (s *WorkflowService) GetWorkflowEdges(
 
 	return s.repo.ListWorkflowEdges(ctx, workflowID)
 }
-
 
 func (s *WorkflowService) RunWorkflowFromWebhook(
 	ctx context.Context,
@@ -501,7 +505,13 @@ func (s *WorkflowService) RunWorkflowWithInput(
 
 	stepMap := make(map[uuid.UUID]db.WorkflowStep)
 	incomingCount := make(map[uuid.UUID]int)
-	nextSteps := make(map[uuid.UUID][]uuid.UUID)
+
+	type NextEdge struct {
+		TargetStepID    uuid.UUID
+		ConditionBranch string
+	}
+
+	nextSteps := make(map[uuid.UUID][]NextEdge)
 
 	for _, step := range steps {
 		stepMap[step.ID] = step
@@ -509,7 +519,21 @@ func (s *WorkflowService) RunWorkflowWithInput(
 	}
 
 	for _, edge := range edges {
-		nextSteps[edge.SourceStepID] = append(nextSteps[edge.SourceStepID], edge.TargetStepID)
+
+		branch := ""
+
+		if edge.ConditionBranch.Valid {
+			branch = edge.ConditionBranch.String
+		}
+
+		nextSteps[edge.SourceStepID] = append(
+			nextSteps[edge.SourceStepID],
+			NextEdge{
+				TargetStepID:    edge.TargetStepID,
+				ConditionBranch: branch,
+			},
+		)
+
 		incomingCount[edge.TargetStepID]++
 	}
 
@@ -610,10 +634,48 @@ func (s *WorkflowService) RunWorkflowWithInput(
 			return err
 		}
 
-		for _, nextStepID := range nextSteps[stepID] {
-			nodeInputs[nextStepID] = output
+		fmt.Println("===================================")
+		fmt.Println("CURRENT STEP:", step.StepType)
+		fmt.Println("CURRENT STEP ID:", stepID)
+		fmt.Println("NEXT EDGES:", nextSteps[stepID])
 
-			if err := executeNode(execCtx, nextStepID); err != nil {
+		for _, edge := range nextSteps[stepID] {
+
+			fmt.Println("EDGE TARGET:", edge.TargetStepID)
+			fmt.Println("EDGE BRANCH:", edge.ConditionBranch)
+
+			if step.StepType == "condition" {
+
+				var conditionResult struct {
+					Result bool `json:"result"`
+				}
+
+				if err := json.Unmarshal(output, &conditionResult); err != nil {
+					return err
+				}
+
+				fmt.Println("CONDITION RESULT:", conditionResult.Result)
+
+				if conditionResult.Result && edge.ConditionBranch != "true" {
+					fmt.Println("SKIPPING FALSE EDGE")
+					continue
+				}
+
+				if !conditionResult.Result && edge.ConditionBranch != "false" {
+					fmt.Println("SKIPPING TRUE EDGE")
+					continue
+				}
+			}
+
+			fmt.Println("EXECUTING NEXT NODE:", edge.TargetStepID)
+
+			if step.StepType == "condition" {
+				nodeInputs[edge.TargetStepID] = nodeInputs[stepID]
+			} else {
+				nodeInputs[edge.TargetStepID] = output
+			}
+
+			if err := executeNode(execCtx, edge.TargetStepID); err != nil {
 				return err
 			}
 		}

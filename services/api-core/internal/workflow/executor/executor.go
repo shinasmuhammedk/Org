@@ -30,6 +30,12 @@ func (e *Executor) ExecuteStep(
 	case "http_request":
 		return e.executeHTTPRequest(step.Config, input)
 
+	case "condition":
+		return e.executeCondition(step.Config, input)
+
+	case "delay":
+		return e.executeDelay(step.Config)
+
 	default:
 		return nil, errors.New(
 			"unsupported step type: " + step.StepType,

@@ -100,9 +100,10 @@ INSERT INTO workflow_edges (
     id,
     workflow_id,
     source_step_id,
-    target_step_id
+    target_step_id,
+    condition_branch
 ) VALUES (
-    $1, $2, $3, $4
+    $1, $2, $3, $4, $5
 )
 RETURNING *;
 
@@ -111,14 +112,16 @@ RETURNING *;
 SELECT
     we.id,
     we.workflow_id,
-    source_step.frontend_node_id AS source_frontend_node_id,
-    target_step.frontend_node_id AS target_frontend_node_id,
-    we.created_at
+    we.source_step_id,
+    we.target_step_id,
+    we.condition_branch,
+    we.created_at,
+
+    source.frontend_node_id AS source_frontend_node_id,
+    target.frontend_node_id AS target_frontend_node_id
 FROM workflow_edges we
-JOIN workflow_steps source_step
-    ON source_step.id = we.source_step_id
-JOIN workflow_steps target_step
-    ON target_step.id = we.target_step_id
+JOIN workflow_steps source ON source.id = we.source_step_id
+JOIN workflow_steps target ON target.id = we.target_step_id
 WHERE we.workflow_id = $1
 ORDER BY we.created_at ASC;
 

@@ -101,18 +101,20 @@ INSERT INTO workflow_edges (
     id,
     workflow_id,
     source_step_id,
-    target_step_id
+    target_step_id,
+    condition_branch
 ) VALUES (
-    $1, $2, $3, $4
+    $1, $2, $3, $4, $5
 )
-RETURNING id, workflow_id, source_step_id, target_step_id, created_at
+RETURNING id, workflow_id, source_step_id, target_step_id, condition_branch, created_at
 `
 
 type CreateWorkflowEdgeParams struct {
-	ID           uuid.UUID
-	WorkflowID   uuid.UUID
-	SourceStepID uuid.UUID
-	TargetStepID uuid.UUID
+	ID              uuid.UUID
+	WorkflowID      uuid.UUID
+	SourceStepID    uuid.UUID
+	TargetStepID    uuid.UUID
+	ConditionBranch sql.NullString
 }
 
 func (q *Queries) CreateWorkflowEdge(ctx context.Context, arg CreateWorkflowEdgeParams) (WorkflowEdge, error) {
@@ -121,6 +123,7 @@ func (q *Queries) CreateWorkflowEdge(ctx context.Context, arg CreateWorkflowEdge
 		arg.WorkflowID,
 		arg.SourceStepID,
 		arg.TargetStepID,
+		arg.ConditionBranch,
 	)
 	var i WorkflowEdge
 	err := row.Scan(
@@ -128,6 +131,7 @@ func (q *Queries) CreateWorkflowEdge(ctx context.Context, arg CreateWorkflowEdge
 		&i.WorkflowID,
 		&i.SourceStepID,
 		&i.TargetStepID,
+		&i.ConditionBranch,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -435,14 +439,16 @@ const listWorkflowEdges = `-- name: ListWorkflowEdges :many
 SELECT
     we.id,
     we.workflow_id,
-    source_step.frontend_node_id AS source_frontend_node_id,
-    target_step.frontend_node_id AS target_frontend_node_id,
-    we.created_at
+    we.source_step_id,
+    we.target_step_id,
+    we.condition_branch,
+    we.created_at,
+
+    source.frontend_node_id AS source_frontend_node_id,
+    target.frontend_node_id AS target_frontend_node_id
 FROM workflow_edges we
-JOIN workflow_steps source_step
-    ON source_step.id = we.source_step_id
-JOIN workflow_steps target_step
-    ON target_step.id = we.target_step_id
+JOIN workflow_steps source ON source.id = we.source_step_id
+JOIN workflow_steps target ON target.id = we.target_step_id
 WHERE we.workflow_id = $1
 ORDER BY we.created_at ASC
 `
@@ -450,9 +456,12 @@ ORDER BY we.created_at ASC
 type ListWorkflowEdgesRow struct {
 	ID                   uuid.UUID
 	WorkflowID           uuid.UUID
+	SourceStepID         uuid.UUID
+	TargetStepID         uuid.UUID
+	ConditionBranch      sql.NullString
+	CreatedAt            sql.NullTime
 	SourceFrontendNodeID string
 	TargetFrontendNodeID string
-	CreatedAt            sql.NullTime
 }
 
 func (q *Queries) ListWorkflowEdges(ctx context.Context, workflowID uuid.UUID) ([]ListWorkflowEdgesRow, error) {
@@ -467,9 +476,12 @@ func (q *Queries) ListWorkflowEdges(ctx context.Context, workflowID uuid.UUID) (
 		if err := rows.Scan(
 			&i.ID,
 			&i.WorkflowID,
+			&i.SourceStepID,
+			&i.TargetStepID,
+			&i.ConditionBranch,
+			&i.CreatedAt,
 			&i.SourceFrontendNodeID,
 			&i.TargetFrontendNodeID,
-			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -485,7 +497,7 @@ func (q *Queries) ListWorkflowEdges(ctx context.Context, workflowID uuid.UUID) (
 }
 
 const listWorkflowEdgesForExecution = `-- name: ListWorkflowEdgesForExecution :many
-SELECT id, workflow_id, source_step_id, target_step_id, created_at
+SELECT id, workflow_id, source_step_id, target_step_id, condition_branch, created_at
 FROM workflow_edges
 WHERE workflow_id = $1
 ORDER BY created_at ASC
@@ -505,6 +517,7 @@ func (q *Queries) ListWorkflowEdgesForExecution(ctx context.Context, workflowID 
 			&i.WorkflowID,
 			&i.SourceStepID,
 			&i.TargetStepID,
+			&i.ConditionBranch,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err

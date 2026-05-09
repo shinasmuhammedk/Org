@@ -57,11 +57,12 @@ type Workflow struct {
 }
 
 type WorkflowEdge struct {
-	ID           uuid.UUID
-	WorkflowID   uuid.UUID
-	SourceStepID uuid.UUID
-	TargetStepID uuid.UUID
-	CreatedAt    sql.NullTime
+	ID              uuid.UUID
+	WorkflowID      uuid.UUID
+	SourceStepID    uuid.UUID
+	TargetStepID    uuid.UUID
+	ConditionBranch sql.NullString
+	CreatedAt       sql.NullTime
 }
 
 type WorkflowRun struct {
