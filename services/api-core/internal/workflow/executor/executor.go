@@ -1,7 +1,9 @@
 package executor
 
 import (
+	"encoding/json"
 	"errors"
+	"time"
 
 	"org/api-core/internal/db"
 )
@@ -12,11 +14,56 @@ func NewExecutor() *Executor {
 	return &Executor{}
 }
 
+type RetryConfig struct {
+	Enabled      bool `json:"enabled"`
+	MaxAttempts  int  `json:"max_attempts"`
+	DelaySeconds int  `json:"delay_seconds"`
+}
+
+type StepConfig struct {
+	Retry RetryConfig `json:"retry"`
+}
+
 func (e *Executor) ExecuteStep(
 	step db.WorkflowStep,
 	input []byte,
 ) ([]byte, error) {
+	retryConfig := getRetryConfig(step.Config)
 
+	if !retryConfig.Enabled {
+		return e.executeStepOnce(step, input)
+	}
+
+	if retryConfig.MaxAttempts <= 0 {
+		retryConfig.MaxAttempts = 1
+	}
+
+	if retryConfig.DelaySeconds < 0 {
+		retryConfig.DelaySeconds = 0
+	}
+
+	var output []byte
+	var err error
+
+	for attempt := 1; attempt <= retryConfig.MaxAttempts; attempt++ {
+		output, err = e.executeStepOnce(step, input)
+
+		if err == nil {
+			return output, nil
+		}
+
+		if attempt < retryConfig.MaxAttempts {
+			time.Sleep(time.Duration(retryConfig.DelaySeconds) * time.Second)
+		}
+	}
+
+	return nil, err
+}
+
+func (e *Executor) executeStepOnce(
+	step db.WorkflowStep,
+	input []byte,
+) ([]byte, error) {
 	switch step.StepType {
 
 	case "webhook_trigger":
@@ -41,4 +88,27 @@ func (e *Executor) ExecuteStep(
 			"unsupported step type: " + step.StepType,
 		)
 	}
+}
+
+func getRetryConfig(config []byte) RetryConfig {
+	var stepConfig StepConfig
+
+	err := json.Unmarshal(config, &stepConfig)
+	if err != nil {
+		return RetryConfig{
+			Enabled:      false,
+			MaxAttempts:  1,
+			DelaySeconds: 0,
+		}
+	}
+
+	if stepConfig.Retry.MaxAttempts <= 0 {
+		stepConfig.Retry.MaxAttempts = 1
+	}
+
+	if stepConfig.Retry.DelaySeconds < 0 {
+		stepConfig.Retry.DelaySeconds = 0
+	}
+
+	return stepConfig.Retry
 }
