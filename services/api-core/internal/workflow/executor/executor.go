@@ -83,6 +83,9 @@ func (e *Executor) executeStepOnce(
 	case "delay":
 		return e.executeDelay(step.Config)
 
+	case "email":
+		return e.executeEmail(step.Config, input)
+
 	default:
 		return nil, errors.New(
 			"unsupported step type: " + step.StepType,
