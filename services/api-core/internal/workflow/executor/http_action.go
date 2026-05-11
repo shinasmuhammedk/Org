@@ -12,9 +12,10 @@ import (
 
 func (e *Executor) executeHTTPRequest(config []byte, input []byte) ([]byte, error) {
 	var cfg struct {
-		Method string          `json:"method"`
-		URL    string          `json:"url"`
-		Body   json.RawMessage `json:"body"`
+		Method         string          `json:"method"`
+		URL            string          `json:"url"`
+		Body           json.RawMessage `json:"body"`
+		TimeoutSeconds int             `json:"timeout_seconds"`
 	}
 
 	if err := json.Unmarshal(config, &cfg); err != nil {
@@ -75,8 +76,12 @@ func (e *Executor) executeHTTPRequest(config []byte, input []byte) ([]byte, erro
 
 	req.Header.Set("Content-Type", "application/json")
 
+	if cfg.TimeoutSeconds <= 0 {
+		cfg.TimeoutSeconds = 15
+	}
+
 	client := &http.Client{
-		Timeout: 15 * time.Second,
+		Timeout: time.Duration(cfg.TimeoutSeconds) * time.Second,
 	}
 
 	resp, err := client.Do(req)
