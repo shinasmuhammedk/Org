@@ -26,9 +26,11 @@ INSERT INTO workflow_steps (
     frontend_node_id,
     step_order,
     step_type,
-    config
+    config,
+    position_x,
+    position_y
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4, $5, $6, $7, $8
 )
 RETURNING *;
 

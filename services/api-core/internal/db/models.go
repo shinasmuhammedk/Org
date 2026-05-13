@@ -83,6 +83,8 @@ type WorkflowStep struct {
 	StepOrder      int32
 	StepType       string
 	Config         json.RawMessage
+	PositionX      float64
+	PositionY      float64
 	CreatedAt      time.Time
 }
 

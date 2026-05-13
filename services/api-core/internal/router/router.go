@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 
+	"org/api-core/internal/auth/handler"
 	authHandlerPkg "org/api-core/internal/auth/handler"
 	"org/api-core/internal/auth/middleware"
 	authRepository "org/api-core/internal/auth/repository"
@@ -17,6 +18,7 @@ import (
 	workflowHandlerPkg "org/api-core/internal/workflow/handler"
 	workflowRepository "org/api-core/internal/workflow/repository"
 	workflowServicePkg "org/api-core/internal/workflow/service"
+    billingHandler "org/api-core/internal/billing"
 )
 
 func RegisterRoutes(r *gin.Engine) {
@@ -50,6 +52,11 @@ func authRoutes(r *gin.Engine) {
 
 	r.GET("/auth/google/start", googleAuthHandler.GoogleAuthStart)
 	r.GET("/auth/google/callback", googleAuthHandler.GoogleAuthCallback)
+    
+    
+    r.GET("/test-billing", handler.TestBilling)
+    r.POST("/billing/checkout", billingHandler.CreateCheckoutSession)
+    
 }
 
 func oauthRoutes(r *gin.Engine) {

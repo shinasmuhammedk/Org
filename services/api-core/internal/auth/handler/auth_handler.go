@@ -2,10 +2,13 @@ package handler
 
 import (
 	"Org/utils/response"
+	"context"
 	"fmt"
 	"org/api-core/internal/auth/service"
+	"org/api-core/internal/billing"
 
 	"github.com/gin-gonic/gin"
+	pb "org/api-core/proto"
 )
 
 type AuthHandler struct {
@@ -185,4 +188,26 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 	}
 
 	response.OK(c, "logged out successfully", nil)
+}
+
+func TestBilling(c *gin.Context) {
+
+	res, err := billing.Client.GetUserSubscription(
+		context.Background(),
+		&pb.GetUserSubscriptionRequest{
+			UserId: "11111111-1111-1111-1111-111111111111",
+		},
+	)
+
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"plan":   res.Plan,
+		"status": res.Status,
+	})
 }

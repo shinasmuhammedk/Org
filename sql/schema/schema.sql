@@ -44,6 +44,8 @@ CREATE TABLE workflow_steps (
     step_order INT NOT NULL,
     step_type TEXT NOT NULL,
     config JSONB NOT NULL,
+    position_x DOUBLE PRECISION NOT NULL DEFAULT 0,
+    position_y DOUBLE PRECISION NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 

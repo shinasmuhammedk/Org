@@ -22,27 +22,12 @@ func (e *Executor) executeHTTPRequest(config []byte, input []byte) ([]byte, erro
 		return nil, err
 	}
 
+	cfg.URL = interpolateString(cfg.URL, input)
+
 	if len(input) > 0 && len(cfg.Body) > 0 {
-		var inputMap map[string]interface{}
-
-		if err := json.Unmarshal(input, &inputMap); err == nil {
-			bodyString := string(cfg.Body)
-
-			for key, value := range inputMap {
-				placeholder := "{{trigger." + key + "}}"
-
-				valueBytes, _ := json.Marshal(value)
-				valueString := string(valueBytes)
-
-				if strValue, ok := value.(string); ok {
-					valueString = strValue
-				}
-
-				bodyString = strings.ReplaceAll(bodyString, placeholder, valueString)
-			}
-
-			cfg.Body = json.RawMessage(bodyString)
-		}
+		bodyString := string(cfg.Body)
+		bodyString = interpolateString(bodyString, input)
+		cfg.Body = json.RawMessage(bodyString)
 	}
 
 	if cfg.URL == "" {

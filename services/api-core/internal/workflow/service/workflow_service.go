@@ -28,6 +28,8 @@ type SaveWorkflowStepRequest struct {
 	StepOrder      int             `json:"step_order"`
 	StepType       string          `json:"step_type"`
 	Config         json.RawMessage `json:"config"`
+	PositionX      float64         `json:"position_x"`
+	PositionY      float64         `json:"position_y"`
 }
 
 type SaveWorkflowEdgeRequest struct {
@@ -357,6 +359,8 @@ func (s *WorkflowService) SaveWorkflowSteps(
 			StepOrder:      int32(step.StepOrder),
 			StepType:       step.StepType,
 			Config:         config,
+			PositionX:      step.PositionX,
+			PositionY:      step.PositionY,
 		})
 		if err != nil {
 			return err

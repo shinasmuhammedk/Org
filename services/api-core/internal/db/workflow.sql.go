@@ -181,11 +181,13 @@ INSERT INTO workflow_steps (
     frontend_node_id,
     step_order,
     step_type,
-    config
+    config,
+    position_x,
+    position_y
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4, $5, $6, $7, $8
 )
-RETURNING id, workflow_id, frontend_node_id, step_order, step_type, config, created_at
+RETURNING id, workflow_id, frontend_node_id, step_order, step_type, config, position_x, position_y, created_at
 `
 
 type CreateWorkflowStepParams struct {
@@ -195,6 +197,8 @@ type CreateWorkflowStepParams struct {
 	StepOrder      int32
 	StepType       string
 	Config         json.RawMessage
+	PositionX      float64
+	PositionY      float64
 }
 
 func (q *Queries) CreateWorkflowStep(ctx context.Context, arg CreateWorkflowStepParams) (WorkflowStep, error) {
@@ -205,6 +209,8 @@ func (q *Queries) CreateWorkflowStep(ctx context.Context, arg CreateWorkflowStep
 		arg.StepOrder,
 		arg.StepType,
 		arg.Config,
+		arg.PositionX,
+		arg.PositionY,
 	)
 	var i WorkflowStep
 	err := row.Scan(
@@ -214,6 +220,8 @@ func (q *Queries) CreateWorkflowStep(ctx context.Context, arg CreateWorkflowStep
 		&i.StepOrder,
 		&i.StepType,
 		&i.Config,
+		&i.PositionX,
+		&i.PositionY,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -618,7 +626,7 @@ func (q *Queries) ListWorkflowStepRuns(ctx context.Context, workflowRunID uuid.U
 }
 
 const listWorkflowSteps = `-- name: ListWorkflowSteps :many
-SELECT id, workflow_id, frontend_node_id, step_order, step_type, config, created_at FROM workflow_steps
+SELECT id, workflow_id, frontend_node_id, step_order, step_type, config, position_x, position_y, created_at FROM workflow_steps
 WHERE workflow_id = $1
 ORDER BY step_order ASC
 `
@@ -639,6 +647,8 @@ func (q *Queries) ListWorkflowSteps(ctx context.Context, workflowID uuid.UUID) (
 			&i.StepOrder,
 			&i.StepType,
 			&i.Config,
+			&i.PositionX,
+			&i.PositionY,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
