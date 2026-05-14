@@ -1,6 +1,7 @@
 package billing
 
 import (
+	"context"
 	"log"
 
 	pb "org/api-core/proto"
@@ -26,4 +27,23 @@ func Connect() {
 	Client = pb.NewBillingServiceClient(conn)
 
 	log.Println("Connected to billing service")
+}
+
+
+func GetUserSubscription(
+	userID string,
+) (string, string, error) {
+
+	res, err := Client.GetUserSubscription(
+		context.Background(),
+		&pb.GetUserSubscriptionRequest{
+			UserId: userID,
+		},
+	)
+
+	if err != nil {
+		return "", "", err
+	}
+
+	return res.Plan, res.Status, nil
 }

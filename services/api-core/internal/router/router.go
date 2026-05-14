@@ -55,7 +55,7 @@ func authRoutes(r *gin.Engine) {
     
     
     r.GET("/test-billing", handler.TestBilling)
-    r.POST("/billing/checkout", billingHandler.CreateCheckoutSession)
+    r.POST("/billing/checkout",middleware.AuthMiddleware(), billingHandler.CreateCheckoutSession)
     
 }
 

@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
+	"org/api-core/internal/billing"
 	"org/api-core/internal/workflow/service"
 )
 
@@ -269,9 +270,47 @@ func (h *WorkflowHandler) RunWorkflow(c *gin.Context) {
 		return
 	}
 
-	runID, err := h.workflowService.RunWorkflow(c.Request.Context(), workflowID, userID)
+	// CHECK SUBSCRIPTION
+	plan, status, err := billing.GetUserSubscription(userIDString)
 	if err != nil {
-		response.InternalServerError(c, "workflow execution failed", err.Error())
+		response.InternalServerError(
+			c,
+			"failed to check subscription",
+			err.Error(),
+		)
+		return
+	}
+
+	if status != "active" {
+		response.Forbidden(
+			c,
+			"subscription inactive",
+		)
+		return
+	}
+
+	// TEMPORARY RULE:
+	// free users cannot run workflows
+	if plan == "free" {
+		response.Forbidden(
+			c,
+			"upgrade required to run workflows",
+		)
+		return
+	}
+
+	runID, err := h.workflowService.RunWorkflow(
+		c.Request.Context(),
+		workflowID,
+		userID,
+	)
+
+	if err != nil {
+		response.InternalServerError(
+			c,
+			"workflow execution failed",
+			err.Error(),
+		)
 		return
 	}
 
