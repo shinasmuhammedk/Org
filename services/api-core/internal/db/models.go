@@ -46,14 +46,20 @@ type WebhookTrigger struct {
 }
 
 type Workflow struct {
-	ID          uuid.UUID
-	UserID      uuid.UUID
-	Name        string
-	Description string
-	TriggerType string
-	IsActive    bool
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID                uuid.UUID
+	UserID            uuid.UUID
+	Name              string
+	Description       string
+	TriggerType       string
+	IsActive          bool
+	ScheduleEnabled   bool
+	ScheduleType      sql.NullString
+	ScheduleValue     sql.NullString
+	NextRunAt         sql.NullTime
+	LastRunAt         sql.NullTime
+	IsScheduleRunning bool
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
 }
 
 type WorkflowEdge struct {
@@ -99,4 +105,13 @@ type WorkflowStepRun struct {
 	StartedAt      sql.NullTime
 	FinishedAt     sql.NullTime
 	CreatedAt      time.Time
+}
+
+type WorkflowUsage struct {
+	ID           uuid.UUID
+	UserID       uuid.UUID
+	Month        string
+	WorkflowRuns sql.NullInt32
+	CreatedAt    sql.NullTime
+	UpdatedAt    sql.NullTime
 }

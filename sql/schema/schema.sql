@@ -24,7 +24,6 @@ CREATE TABLE connected_accounts (
 );
 
 
-
 CREATE TABLE workflows (
     id UUID PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -32,6 +31,14 @@ CREATE TABLE workflows (
     description TEXT NOT NULL DEFAULT '',
     trigger_type TEXT NOT NULL DEFAULT 'manual',
     is_active BOOLEAN NOT NULL DEFAULT true,
+
+    schedule_enabled BOOLEAN NOT NULL DEFAULT false,
+    schedule_type TEXT,
+    schedule_value TEXT,
+    next_run_at TIMESTAMP,
+    last_run_at TIMESTAMP,
+    is_schedule_running BOOLEAN NOT NULL DEFAULT false,
+
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -92,4 +99,15 @@ CREATE TABLE webhook_triggers (
     webhook_url_id TEXT NOT NULL UNIQUE,
     frontend_node_id TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
+);
+
+
+CREATE TABLE workflow_usage (
+    id UUID PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    month TEXT NOT NULL,
+    workflow_runs INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(user_id, month)
 );

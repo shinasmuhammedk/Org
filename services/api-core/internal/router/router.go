@@ -15,10 +15,13 @@ import (
 	oauthRepository "org/api-core/internal/oauth/repository"
 	oauthServicePkg "org/api-core/internal/oauth/service"
 
+	billingHandler "org/api-core/internal/billing"
+	usageRepository "org/api-core/internal/usage/repository"
+	usageServicePkg "org/api-core/internal/usage/service"
 	workflowHandlerPkg "org/api-core/internal/workflow/handler"
 	workflowRepository "org/api-core/internal/workflow/repository"
 	workflowServicePkg "org/api-core/internal/workflow/service"
-    billingHandler "org/api-core/internal/billing"
+    usageHandlerPkg "org/api-core/internal/usage/handler"
 )
 
 func RegisterRoutes(r *gin.Engine) {
@@ -27,6 +30,7 @@ func RegisterRoutes(r *gin.Engine) {
 	authRoutes(r)
 	oauthRoutes(r)
 	workflowRoutes(r)
+    billingRoutes(r)
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -52,11 +56,9 @@ func authRoutes(r *gin.Engine) {
 
 	r.GET("/auth/google/start", googleAuthHandler.GoogleAuthStart)
 	r.GET("/auth/google/callback", googleAuthHandler.GoogleAuthCallback)
-    
-    
-    r.GET("/test-billing", handler.TestBilling)
-    r.POST("/billing/checkout",middleware.AuthMiddleware(), billingHandler.CreateCheckoutSession)
-    
+
+	r.GET("/test-billing", handler.TestBilling)
+
 }
 
 func oauthRoutes(r *gin.Engine) {
@@ -71,7 +73,9 @@ func oauthRoutes(r *gin.Engine) {
 func workflowRoutes(r *gin.Engine) {
 	workflowRepo := workflowRepository.NewSQLCWorkflowRepository(db.QueriesInstance)
 	workflowService := workflowServicePkg.NewWorkflowService(workflowRepo)
-	workflowHandler := workflowHandlerPkg.NewWorkflowHandler(workflowService)
+	usageRepo := usageRepository.NewPostgresRepository(db.QueriesInstance)
+	usageService := usageServicePkg.NewService(usageRepo)
+	workflowHandler := workflowHandlerPkg.NewWorkflowHandler(workflowService, usageService)
 
 	r.POST("/webhooks/:webhookID", workflowHandler.HandleWebhookTrigger)
 
@@ -88,8 +92,24 @@ func workflowRoutes(r *gin.Engine) {
 	auth.PUT("/workflows/:id/steps", workflowHandler.SaveWorkflowSteps)
 	auth.GET("/workflows/:id/steps", workflowHandler.GetWorkflowSteps)
 
+    auth.PUT("/workflows/:id/schedule", workflowHandler.UpdateWorkflowSchedule)
 	auth.POST("/workflows/:id/run", workflowHandler.RunWorkflow)
 	auth.GET("/workflows/:id/runs", workflowHandler.ListWorkflowRuns)
 	auth.GET("/workflow-runs/:id/steps", workflowHandler.ListWorkflowStepRuns)
 	auth.GET("/workflows/:id/edges", workflowHandler.GetWorkflowEdges)
+    auth.GET("/workflows/:id/schedule", workflowHandler.GetWorkflowSchedule)
+}
+
+func billingRoutes(r *gin.Engine) {
+	usageRepo := usageRepository.NewPostgresRepository(db.QueriesInstance)
+	usageService := usageServicePkg.NewService(usageRepo)
+	usageHandler := usageHandlerPkg.NewUsageHandler(usageService)
+
+	billing := r.Group("/billing")
+	billing.Use(middleware.AuthMiddleware())
+
+	billing.POST("/checkout", billingHandler.CreateCheckoutSession)
+	billing.GET("/subscription", billingHandler.GetSubscription)
+	billing.GET("/usage", usageHandler.GetUsage)
+    billing.POST("/portal", billingHandler.CreatePortalSession)
 }

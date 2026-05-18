@@ -6,10 +6,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/sqlc-dev/pqtype"
 
+	"github.com/robfig/cron/v3"
 	"org/api-core/internal/db"
 	"org/api-core/internal/workflow/executor"
 	"org/api-core/internal/workflow/repository"
@@ -41,6 +44,13 @@ type SaveWorkflowEdgeRequest struct {
 type SaveWorkflowStepsRequest struct {
 	Steps []SaveWorkflowStepRequest `json:"steps"`
 	Edges []SaveWorkflowEdgeRequest `json:"edges"`
+}
+
+type UpdateWorkflowScheduleRequest struct {
+	Enabled       bool   `json:"enabled"`
+	ScheduleType  string `json:"schedule_type"`
+	ScheduleValue string `json:"schedule_value"`
+	// NextRunAt     string `json:"next_run_at"`
 }
 
 //
@@ -705,4 +715,141 @@ func (s *WorkflowService) RunWorkflowWithInput(
 	}()
 
 	return runID, nil
+}
+
+func (s *WorkflowService) UpdateWorkflowSchedule(
+	ctx context.Context,
+	workflowID uuid.UUID,
+	userID uuid.UUID,
+	req UpdateWorkflowScheduleRequest,
+) error {
+	var nextRunAt sql.NullTime
+
+	if req.Enabled && req.ScheduleValue == "" {
+		return errors.New("schedule value is required")
+	}
+
+	if req.Enabled {
+		parser := cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow)
+
+		schedule, err := parser.Parse(req.ScheduleValue)
+		if err != nil {
+			return err
+		}
+
+		nextRunAt = sql.NullTime{
+			Time:  schedule.Next(time.Now()),
+			Valid: true,
+		}
+	}
+
+	return s.repo.UpdateWorkflowSchedule(ctx, db.UpdateWorkflowScheduleParams{
+		ID:              workflowID,
+		ScheduleEnabled: req.Enabled,
+		ScheduleType: sql.NullString{
+			String: req.ScheduleType,
+			Valid:  req.ScheduleType != "",
+		},
+		ScheduleValue: sql.NullString{
+			String: req.ScheduleValue,
+			Valid:  req.ScheduleValue != "",
+		},
+		NextRunAt: nextRunAt,
+		UserID:    userID,
+	})
+}
+
+func (s *WorkflowService) ListDueScheduledWorkflows(
+	ctx context.Context,
+) ([]db.Workflow, error) {
+	return s.repo.ListDueScheduledWorkflows(ctx)
+}
+
+func (s *WorkflowService) RunScheduledWorkflow(
+	ctx context.Context,
+	workflow db.Workflow,
+) (err error) {
+	log.Println("executing scheduled workflow:", workflow.ID)
+
+	err = s.repo.MarkScheduleRunning(
+		ctx,
+		db.MarkScheduleRunningParams{
+			ID:                workflow.ID,
+			IsScheduleRunning: true,
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err != nil {
+			s.unlockSchedule(ctx, workflow.ID)
+		}
+	}()
+
+	_, err = s.RunWorkflow(
+		ctx,
+		workflow.ID,
+		workflow.UserID,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if !workflow.ScheduleValue.Valid {
+		return errors.New("schedule value is empty")
+	}
+
+	parser := cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow)
+
+	schedule, err := parser.Parse(workflow.ScheduleValue.String)
+	if err != nil {
+		return err
+	}
+
+	nextRunAt := schedule.Next(time.Now())
+
+	return s.repo.MarkWorkflowScheduleRun(
+		ctx,
+		db.MarkWorkflowScheduleRunParams{
+			ID: workflow.ID,
+			NextRunAt: sql.NullTime{
+				Time:  nextRunAt,
+				Valid: true,
+			},
+		},
+	)
+}
+
+func (s *WorkflowService) unlockSchedule(
+	ctx context.Context,
+	workflowID uuid.UUID,
+) {
+	err := s.repo.MarkScheduleRunning(
+		ctx,
+		db.MarkScheduleRunningParams{
+			ID:                workflowID,
+			IsScheduleRunning: false,
+		},
+	)
+
+	if err != nil {
+		log.Println("failed to unlock schedule:", err)
+	}
+}
+
+func (s *WorkflowService) GetWorkflowSchedule(
+	ctx context.Context,
+	workflowID uuid.UUID,
+	userID uuid.UUID,
+) (db.GetWorkflowScheduleRow, error) {
+	return s.repo.GetWorkflowSchedule(
+		ctx,
+		db.GetWorkflowScheduleParams{
+			ID:     workflowID,
+			UserID: userID,
+		},
+	)
 }

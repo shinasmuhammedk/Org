@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 
 	"Org/utils/response"
 
@@ -9,22 +10,35 @@ import (
 	"github.com/google/uuid"
 
 	"org/api-core/internal/billing"
+	usageService "org/api-core/internal/usage/service"
 	"org/api-core/internal/workflow/service"
 )
 
 type WorkflowHandler struct {
 	workflowService *service.WorkflowService
+	usageService    *usageService.Service
 }
 
-func NewWorkflowHandler(workflowService *service.WorkflowService) *WorkflowHandler {
+func NewWorkflowHandler(workflowService *service.WorkflowService, usageService *usageService.Service) *WorkflowHandler {
 	return &WorkflowHandler{
 		workflowService: workflowService,
+		usageService:    usageService,
 	}
 }
 
 type SaveWorkflowStepsRequest struct {
 	Steps []service.SaveWorkflowStepRequest `json:"steps"`
 	Edges []service.SaveWorkflowEdgeRequest `json:"edges"`
+}
+
+type SaveWorkflowRequest struct {
+	Name string `json:"name"`
+}
+
+type UpdateWorkflowScheduleRequest struct {
+	ScheduleEnabled bool   `json:"schedule_enabled"`
+	ScheduleType    string `json:"schedule_type"`
+	ScheduleValue   string `json:"schedule_value"`
 }
 
 // CREATE WORKFLOW
@@ -273,29 +287,33 @@ func (h *WorkflowHandler) RunWorkflow(c *gin.Context) {
 	// CHECK SUBSCRIPTION
 	plan, status, err := billing.GetUserSubscription(userIDString)
 	if err != nil {
-		response.InternalServerError(
-			c,
-			"failed to check subscription",
-			err.Error(),
-		)
+		response.InternalServerError(c, "failed to check subscription", err.Error())
 		return
 	}
 
 	if status != "active" {
-		response.Forbidden(
-			c,
-			"subscription inactive",
-		)
+		response.Forbidden(c, "subscription inactive")
 		return
 	}
 
-	// TEMPORARY RULE:
-	// free users cannot run workflows
 	if plan == "free" {
-		response.Forbidden(
-			c,
-			"upgrade required to run workflows",
-		)
+		response.Forbidden(c, "upgrade required to run workflows")
+		return
+	}
+
+	// CHECK USAGE LIMIT BEFORE RUNNING
+	allowed, message, err := h.usageService.CanRunWorkflow(
+		c.Request.Context(),
+		userID,
+		plan,
+	)
+	if err != nil {
+		response.InternalServerError(c, "failed to check usage", err.Error())
+		return
+	}
+
+	if !allowed {
+		response.Forbidden(c, message)
 		return
 	}
 
@@ -304,14 +322,15 @@ func (h *WorkflowHandler) RunWorkflow(c *gin.Context) {
 		workflowID,
 		userID,
 	)
-
 	if err != nil {
-		response.InternalServerError(
-			c,
-			"workflow execution failed",
-			err.Error(),
-		)
+		response.InternalServerError(c, "workflow execution failed", err.Error())
 		return
+	}
+
+	// INCREMENT USAGE AFTER SUCCESSFUL RUN
+	if err := h.usageService.IncrementWorkflowRun(c.Request.Context(), userID); err != nil {
+		// do not block response, just log
+		log.Println("failed to increment workflow usage:", err)
 	}
 
 	response.OK(c, "workflow executed successfully", gin.H{
@@ -402,10 +421,89 @@ func (h *WorkflowHandler) HandleWebhookTrigger(c *gin.Context) {
 	runID, err := h.workflowService.RunWorkflowFromWebhook(c.Request.Context(), webhookId, payload)
 	if err != nil {
 		response.InternalServerError(c, "webhook execution failed", err.Error())
-        return
+		return
 	}
-    
-    response.OK(c, "webhook recieved", gin.H{
-        "run_id":runID,
-    })
+
+	response.OK(c, "webhook recieved", gin.H{
+		"run_id": runID,
+	})
+}
+
+func (h *WorkflowHandler) UpdateWorkflowSchedule(c *gin.Context) {
+	workflowIDParam := c.Param("id")
+
+	workflowID, err := uuid.Parse(workflowIDParam)
+	if err != nil {
+		response.BadRequest(c, "invalid workflow id", nil)
+		return
+	}
+
+	userIDValue, exists := c.Get("user_id")
+	if !exists {
+		response.Unauthorized(c, "unauthorized")
+		return
+	}
+
+	userIDString, ok := userIDValue.(string)
+	if !ok {
+		response.Unauthorized(c, "invalid user")
+		return
+	}
+
+	userID, err := uuid.Parse(userIDString)
+	if err != nil {
+		response.Unauthorized(c, "invalid user id")
+		return
+	}
+
+	var req service.UpdateWorkflowScheduleRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "invalid request body", nil)
+		return
+	}
+
+	err = h.workflowService.UpdateWorkflowSchedule(
+		c.Request.Context(),
+		workflowID,
+		userID,
+		req,
+	)
+
+	if err != nil {
+		response.InternalServerError(c, "failed to update workflow schedule", err.Error())
+		return
+	}
+
+	response.OK(c, "workflow schedule updated", nil)
+}
+
+func (h *WorkflowHandler) GetWorkflowSchedule(c *gin.Context) {
+	workflowID, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		response.BadRequest(c, "invalid workflow id", nil)
+		return
+	}
+
+	userIDValue, _ := c.Get("user_id")
+	userIDString := userIDValue.(string)
+
+	userID, err := uuid.Parse(userIDString)
+	if err != nil {
+		response.BadRequest(c, "invalid user id", nil)
+		return
+	}
+
+	schedule, err := h.workflowService.GetWorkflowSchedule(
+		c.Request.Context(),
+		workflowID,
+		userID,
+	)
+
+	if err != nil {
+		response.InternalServerError(c, "failed to get workflow schedule", err.Error())
+		return
+	}
+
+	response.OK(c, "workflow schedule fetched", schedule)
 }

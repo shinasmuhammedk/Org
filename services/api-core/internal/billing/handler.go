@@ -13,8 +13,9 @@ import (
 func CreateCheckoutSession(c *gin.Context) {
 	userID := c.GetString("user_id")
 	log.Println("USER ID FROM MIDDLEWARE:", userID)
+
 	var body struct {
-		PriceID string `json:"price_id"`
+		Plan string `json:"plan"`
 	}
 
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -24,9 +25,9 @@ func CreateCheckoutSession(c *gin.Context) {
 		return
 	}
 
-	if body.PriceID == "" {
+	if body.Plan == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "price_id is required",
+			"error": "plan is required",
 		})
 		return
 	}
@@ -34,8 +35,8 @@ func CreateCheckoutSession(c *gin.Context) {
 	res, err := Client.CreateCheckoutSession(
 		context.Background(),
 		&pb.CreateCheckoutSessionRequest{
-			UserId:  userID,
-			PriceId: body.PriceID,
+			UserId: userID,
+			Plan:   body.Plan,
 		},
 	)
 
@@ -48,5 +49,61 @@ func CreateCheckoutSession(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"checkout_url": res.CheckoutUrl,
+	})
+}
+
+
+
+func GetSubscription(c *gin.Context) {
+	userID := c.GetString("user_id")
+
+	if userID == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "unauthorized",
+		})
+		return
+	}
+
+	plan, status, err := GetUserSubscription(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"plan":   plan,
+		"status": status,
+	})
+}
+
+
+func CreatePortalSession(c *gin.Context) {
+	userID := c.GetString("user_id")
+
+	if userID == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "unauthorized",
+		})
+		return
+	}
+
+	res, err := Client.CreatePortalSession(
+		context.Background(),
+		&pb.CreatePortalSessionRequest{
+			UserId: userID,
+		},
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"portal_url": res.PortalUrl,
 	})
 }

@@ -1,14 +1,18 @@
 package app
 
 import (
+	"context"
 	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
+	tokenstore "org/api-core/internal/auth/tokenStore"
 	"org/api-core/internal/db"
 	"org/api-core/internal/router"
-	tokenstore "org/api-core/internal/auth/tokenStore"
+	"org/api-core/internal/scheduler"
+	workflowRepository "org/api-core/internal/workflow/repository"
+	workflowServicePkg "org/api-core/internal/workflow/service"
 )
 
 func New() *gin.Engine {
@@ -22,6 +26,12 @@ func New() *gin.Engine {
 	r := gin.Default()
 
 	router.RegisterRoutes(r)
+
+	workflowRepo := workflowRepository.NewSQLCWorkflowRepository(db.QueriesInstance)
+	workflowService := workflowServicePkg.NewWorkflowService(workflowRepo)
+
+	schedulerWorker := scheduler.NewScheduler(workflowService)
+	schedulerWorker.Start(context.Background())
 
 	return r
 }

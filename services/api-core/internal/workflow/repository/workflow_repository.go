@@ -39,4 +39,13 @@ type WorkflowRepository interface {
 	GetWebhookTriggerByURLID(ctx context.Context, webhookURLID string) (db.WebhookTrigger, error)
 	DeleteWebhookTriggersByWorkflow(ctx context.Context, workflowID uuid.UUID) error
 	ListWebhookTriggersByWorkflow(ctx context.Context, workflowID uuid.UUID) ([]db.WebhookTrigger, error)
+
+	// Schedule
+	UpdateWorkflowSchedule(ctx context.Context, params db.UpdateWorkflowScheduleParams) error
+	ListDueScheduledWorkflows(ctx context.Context) ([]db.Workflow, error)
+	MarkWorkflowScheduleRun(ctx context.Context, params db.MarkWorkflowScheduleRunParams) error
+    
+    
+    MarkScheduleRunning(ctx context.Context, params db.MarkScheduleRunningParams) error
+    GetWorkflowSchedule(ctx context.Context, params db.GetWorkflowScheduleParams) (db.GetWorkflowScheduleRow, error)
 }

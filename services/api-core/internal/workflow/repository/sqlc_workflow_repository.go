@@ -83,21 +83,38 @@ func (r *SQLCWorkflowRepository) ListWorkflowEdgesForExecution(ctx context.Conte
 	return r.q.ListWorkflowEdgesForExecution(ctx, workflowID)
 }
 
-
-
-
-func (r *SQLCWorkflowRepository)CreateWebhookTrigger(ctx context.Context,arg db.CreateWebhookTriggerParams)(db.WebhookTrigger,error){
-    return r.q.CreateWebhookTrigger(ctx, arg)
+func (r *SQLCWorkflowRepository) CreateWebhookTrigger(ctx context.Context, arg db.CreateWebhookTriggerParams) (db.WebhookTrigger, error) {
+	return r.q.CreateWebhookTrigger(ctx, arg)
 }
 
-func (r *SQLCWorkflowRepository) GetWebhookTriggerByURLID(ctx context.Context,webhookURLID string)(db.WebhookTrigger,error){
-    return r.q.GetWebhookTriggerByURLID(ctx, webhookURLID)
+func (r *SQLCWorkflowRepository) GetWebhookTriggerByURLID(ctx context.Context, webhookURLID string) (db.WebhookTrigger, error) {
+	return r.q.GetWebhookTriggerByURLID(ctx, webhookURLID)
 }
 
-func (r *SQLCWorkflowRepository)DeleteWebhookTriggersByWorkflow(ctx context.Context,workflowID uuid.UUID)error{
-    return r.q.DeleteWebhookTriggersByWorkflow(ctx, workflowID)
+func (r *SQLCWorkflowRepository) DeleteWebhookTriggersByWorkflow(ctx context.Context, workflowID uuid.UUID) error {
+	return r.q.DeleteWebhookTriggersByWorkflow(ctx, workflowID)
 }
 
-func (r *SQLCWorkflowRepository) ListWebhookTriggersByWorkflow(ctx context.Context, workflowID uuid.UUID)([]db.WebhookTrigger,error){
-    return r.q.ListWebhookTriggersByWorkflow(ctx, workflowID)
+func (r *SQLCWorkflowRepository) ListWebhookTriggersByWorkflow(ctx context.Context, workflowID uuid.UUID) ([]db.WebhookTrigger, error) {
+	return r.q.ListWebhookTriggersByWorkflow(ctx, workflowID)
+}
+
+func (r *SQLCWorkflowRepository) UpdateWorkflowSchedule(ctx context.Context, params db.UpdateWorkflowScheduleParams) error {
+	return r.q.UpdateWorkflowSchedule(ctx, params)
+}
+
+func (r *SQLCWorkflowRepository) ListDueScheduledWorkflows(ctx context.Context) ([]db.Workflow, error) {
+	return r.q.ListDueScheduledWorkflows(ctx)
+}
+
+func (r *SQLCWorkflowRepository) MarkWorkflowScheduleRun(ctx context.Context, params db.MarkWorkflowScheduleRunParams) error {
+	return r.q.MarkWorkflowScheduleRun(ctx, params)
+}
+
+func (r *SQLCWorkflowRepository) MarkScheduleRunning(ctx context.Context, params db.MarkScheduleRunningParams) error {
+	return r.q.MarkScheduleRunning(ctx, params)
+}
+
+func (r *SQLCWorkflowRepository) GetWorkflowSchedule(ctx context.Context, params db.GetWorkflowScheduleParams) (db.GetWorkflowScheduleRow, error) {
+	return r.q.GetWorkflowSchedule(ctx, params)
 }

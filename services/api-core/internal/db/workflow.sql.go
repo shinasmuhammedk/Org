@@ -61,7 +61,7 @@ INSERT INTO workflows (
 ) VALUES (
     $1, $2, $3, $4, $5, $6
 )
-RETURNING id, user_id, name, description, trigger_type, is_active, created_at, updated_at
+RETURNING id, user_id, name, description, trigger_type, is_active, schedule_enabled, schedule_type, schedule_value, next_run_at, last_run_at, is_schedule_running, created_at, updated_at
 `
 
 type CreateWorkflowParams struct {
@@ -90,6 +90,12 @@ func (q *Queries) CreateWorkflow(ctx context.Context, arg CreateWorkflowParams) 
 		&i.Description,
 		&i.TriggerType,
 		&i.IsActive,
+		&i.ScheduleEnabled,
+		&i.ScheduleType,
+		&i.ScheduleValue,
+		&i.NextRunAt,
+		&i.LastRunAt,
+		&i.IsScheduleRunning,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -345,7 +351,7 @@ func (q *Queries) GetWebhookTriggerByURLID(ctx context.Context, webhookUrlID str
 }
 
 const getWorkflowByID = `-- name: GetWorkflowByID :one
-SELECT id, user_id, name, description, trigger_type, is_active, created_at, updated_at FROM workflows
+SELECT id, user_id, name, description, trigger_type, is_active, schedule_enabled, schedule_type, schedule_value, next_run_at, last_run_at, is_schedule_running, created_at, updated_at FROM workflows
 WHERE id = $1 AND user_id = $2
 `
 
@@ -364,10 +370,101 @@ func (q *Queries) GetWorkflowByID(ctx context.Context, arg GetWorkflowByIDParams
 		&i.Description,
 		&i.TriggerType,
 		&i.IsActive,
+		&i.ScheduleEnabled,
+		&i.ScheduleType,
+		&i.ScheduleValue,
+		&i.NextRunAt,
+		&i.LastRunAt,
+		&i.IsScheduleRunning,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const getWorkflowSchedule = `-- name: GetWorkflowSchedule :one
+SELECT
+    schedule_enabled,
+    schedule_type,
+    schedule_value,
+    next_run_at,
+    last_run_at
+FROM workflows
+WHERE id = $1 AND user_id = $2
+`
+
+type GetWorkflowScheduleParams struct {
+	ID     uuid.UUID
+	UserID uuid.UUID
+}
+
+type GetWorkflowScheduleRow struct {
+	ScheduleEnabled bool
+	ScheduleType    sql.NullString
+	ScheduleValue   sql.NullString
+	NextRunAt       sql.NullTime
+	LastRunAt       sql.NullTime
+}
+
+func (q *Queries) GetWorkflowSchedule(ctx context.Context, arg GetWorkflowScheduleParams) (GetWorkflowScheduleRow, error) {
+	row := q.db.QueryRowContext(ctx, getWorkflowSchedule, arg.ID, arg.UserID)
+	var i GetWorkflowScheduleRow
+	err := row.Scan(
+		&i.ScheduleEnabled,
+		&i.ScheduleType,
+		&i.ScheduleValue,
+		&i.NextRunAt,
+		&i.LastRunAt,
+	)
+	return i, err
+}
+
+const listDueScheduledWorkflows = `-- name: ListDueScheduledWorkflows :many
+SELECT id, user_id, name, description, trigger_type, is_active, schedule_enabled, schedule_type, schedule_value, next_run_at, last_run_at, is_schedule_running, created_at, updated_at
+FROM workflows
+WHERE schedule_enabled = true
+  AND next_run_at IS NOT NULL
+  AND next_run_at <= NOW()
+  AND is_active = true
+  AND is_schedule_running = false
+`
+
+func (q *Queries) ListDueScheduledWorkflows(ctx context.Context) ([]Workflow, error) {
+	rows, err := q.db.QueryContext(ctx, listDueScheduledWorkflows)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Workflow
+	for rows.Next() {
+		var i Workflow
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Name,
+			&i.Description,
+			&i.TriggerType,
+			&i.IsActive,
+			&i.ScheduleEnabled,
+			&i.ScheduleType,
+			&i.ScheduleValue,
+			&i.NextRunAt,
+			&i.LastRunAt,
+			&i.IsScheduleRunning,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listWebhookTriggersByWorkflow = `-- name: ListWebhookTriggersByWorkflow :many
@@ -406,7 +503,7 @@ func (q *Queries) ListWebhookTriggersByWorkflow(ctx context.Context, workflowID 
 }
 
 const listWorkflowByUser = `-- name: ListWorkflowByUser :many
-SELECT id, user_id, name, description, trigger_type, is_active, created_at, updated_at FROM workflows
+SELECT id, user_id, name, description, trigger_type, is_active, schedule_enabled, schedule_type, schedule_value, next_run_at, last_run_at, is_schedule_running, created_at, updated_at FROM workflows
 WHERE user_id = $1
 ORDER BY created_at DESC
 `
@@ -427,6 +524,12 @@ func (q *Queries) ListWorkflowByUser(ctx context.Context, userID uuid.UUID) ([]W
 			&i.Description,
 			&i.TriggerType,
 			&i.IsActive,
+			&i.ScheduleEnabled,
+			&i.ScheduleType,
+			&i.ScheduleValue,
+			&i.NextRunAt,
+			&i.LastRunAt,
+			&i.IsScheduleRunning,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -664,6 +767,44 @@ func (q *Queries) ListWorkflowSteps(ctx context.Context, workflowID uuid.UUID) (
 	return items, nil
 }
 
+const markScheduleRunning = `-- name: MarkScheduleRunning :exec
+UPDATE workflows
+SET
+    is_schedule_running = $2,
+    updated_at = NOW()
+WHERE id = $1
+`
+
+type MarkScheduleRunningParams struct {
+	ID                uuid.UUID
+	IsScheduleRunning bool
+}
+
+func (q *Queries) MarkScheduleRunning(ctx context.Context, arg MarkScheduleRunningParams) error {
+	_, err := q.db.ExecContext(ctx, markScheduleRunning, arg.ID, arg.IsScheduleRunning)
+	return err
+}
+
+const markWorkflowScheduleRun = `-- name: MarkWorkflowScheduleRun :exec
+UPDATE workflows
+SET
+    last_run_at = NOW(),
+    next_run_at = $2,
+    is_schedule_running = false,
+    updated_at = NOW()
+WHERE id = $1
+`
+
+type MarkWorkflowScheduleRunParams struct {
+	ID        uuid.UUID
+	NextRunAt sql.NullTime
+}
+
+func (q *Queries) MarkWorkflowScheduleRun(ctx context.Context, arg MarkWorkflowScheduleRunParams) error {
+	_, err := q.db.ExecContext(ctx, markWorkflowScheduleRun, arg.ID, arg.NextRunAt)
+	return err
+}
+
 const updateWorkflowRunStatus = `-- name: UpdateWorkflowRunStatus :exec
 UPDATE workflow_runs
 SET status = $2,
@@ -680,6 +821,38 @@ type UpdateWorkflowRunStatusParams struct {
 
 func (q *Queries) UpdateWorkflowRunStatus(ctx context.Context, arg UpdateWorkflowRunStatusParams) error {
 	_, err := q.db.ExecContext(ctx, updateWorkflowRunStatus, arg.ID, arg.Status, arg.ErrorMessage)
+	return err
+}
+
+const updateWorkflowSchedule = `-- name: UpdateWorkflowSchedule :exec
+UPDATE workflows
+SET
+    schedule_enabled = $2,
+    schedule_type = $3,
+    schedule_value = $4,
+    next_run_at = $5,
+    updated_at = NOW()
+WHERE id = $1 AND user_id = $6
+`
+
+type UpdateWorkflowScheduleParams struct {
+	ID              uuid.UUID
+	ScheduleEnabled bool
+	ScheduleType    sql.NullString
+	ScheduleValue   sql.NullString
+	NextRunAt       sql.NullTime
+	UserID          uuid.UUID
+}
+
+func (q *Queries) UpdateWorkflowSchedule(ctx context.Context, arg UpdateWorkflowScheduleParams) error {
+	_, err := q.db.ExecContext(ctx, updateWorkflowSchedule,
+		arg.ID,
+		arg.ScheduleEnabled,
+		arg.ScheduleType,
+		arg.ScheduleValue,
+		arg.NextRunAt,
+		arg.UserID,
+	)
 	return err
 }
 

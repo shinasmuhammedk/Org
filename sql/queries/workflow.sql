@@ -162,3 +162,51 @@ WHERE workflow_id = $1;
 -- name: ListWebhookTriggersByWorkflow :many
 SELECT * FROM webhook_triggers
 WHERE workflow_id = $1;
+
+
+
+-- name: UpdateWorkflowSchedule :exec
+UPDATE workflows
+SET
+    schedule_enabled = $2,
+    schedule_type = $3,
+    schedule_value = $4,
+    next_run_at = $5,
+    updated_at = NOW()
+WHERE id = $1 AND user_id = $6;
+
+-- name: ListDueScheduledWorkflows :many
+SELECT *
+FROM workflows
+WHERE schedule_enabled = true
+  AND next_run_at IS NOT NULL
+  AND next_run_at <= NOW()
+  AND is_active = true
+  AND is_schedule_running = false;
+
+-- name: MarkWorkflowScheduleRun :exec
+UPDATE workflows
+SET
+    last_run_at = NOW(),
+    next_run_at = $2,
+    is_schedule_running = false,
+    updated_at = NOW()
+WHERE id = $1;
+
+-- name: MarkScheduleRunning :exec
+UPDATE workflows
+SET
+    is_schedule_running = $2,
+    updated_at = NOW()
+WHERE id = $1;
+
+
+-- name: GetWorkflowSchedule :one
+SELECT
+    schedule_enabled,
+    schedule_type,
+    schedule_value,
+    next_run_at,
+    last_run_at
+FROM workflows
+WHERE id = $1 AND user_id = $2;
