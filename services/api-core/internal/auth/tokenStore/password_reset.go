@@ -13,7 +13,7 @@ func StorePasswordResetToken(
 	ttl time.Duration,
 ) error {
 	key := "pwd_reset:" + token
-	return rdb.Set(ctx, key, userId, ttl).Err()
+	return RDB.Set(ctx, key, userId, ttl).Err()
 }
 
 func GetPasswordResetToken(
@@ -22,7 +22,7 @@ func GetPasswordResetToken(
 ) (string, error) {
 	key := "pwd_reset:" + token
     fmt.Println("REDIS KEY:", key)
-	return rdb.Get(ctx, key).Result()
+	return RDB.Get(ctx, key).Result()
 }
 
 func DeletePasswordResetToken(
@@ -30,5 +30,5 @@ func DeletePasswordResetToken(
 	token string,
 ) error {
 	key := "pwd_reset" + token
-	return rdb.Del(ctx, key).Err()
+	return RDB.Del(ctx, key).Err()
 }

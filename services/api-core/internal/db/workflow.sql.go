@@ -427,6 +427,7 @@ WHERE schedule_enabled = true
   AND next_run_at <= NOW()
   AND is_active = true
   AND is_schedule_running = false
+  AND trigger_type = 'schedule'
 `
 
 func (q *Queries) ListDueScheduledWorkflows(ctx context.Context) ([]Workflow, error) {

@@ -7,23 +7,34 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/sqlc-dev/pqtype"
 
-	"github.com/robfig/cron/v3"
 	"org/api-core/internal/db"
+	"org/api-core/internal/queue"
 	"org/api-core/internal/workflow/executor"
 	"org/api-core/internal/workflow/repository"
+
+	"github.com/robfig/cron/v3"
 )
 
 type WorkflowService struct {
-	repo repository.WorkflowRepository
+	repo  repository.WorkflowRepository
+	queue *queue.RedisQueue
+
+	subscribers map[string][]chan any
+	mu          sync.Mutex
 }
 
-func NewWorkflowService(repo repository.WorkflowRepository) *WorkflowService {
-	return &WorkflowService{repo: repo}
+func NewWorkflowService(repo repository.WorkflowRepository, workflowQueue *queue.RedisQueue) *WorkflowService {
+	return &WorkflowService{
+		repo:        repo,
+		queue:       workflowQueue,
+		subscribers: make(map[string][]chan any),
+	}
 }
 
 type SaveWorkflowStepRequest struct {
@@ -484,11 +495,47 @@ func (s *WorkflowService) RunWorkflowWithInput(
 		ID:         runID,
 		WorkflowID: workflowID,
 		UserID:     userID,
-		Status:     "running",
+		Status:     "queued",
 	})
 	if err != nil {
 		return runID, err
 	}
+
+	job := queue.WorkflowJob{
+		WorkflowID: workflowID.String(),
+		UserID:     userID.String(),
+		RunID:      runID.String(),
+		Input:      initialInput,
+		Source:     "manual",
+	}
+
+	payload, err := json.Marshal(job)
+	if err != nil {
+		return runID, err
+	}
+
+	err = s.queue.Push(ctx, payload)
+	if err != nil {
+		return runID, err
+	}
+
+	return runID, nil
+}
+
+func (s *WorkflowService) ExecuteWorkflowRun(
+	ctx context.Context,
+	workflowID uuid.UUID,
+	userID uuid.UUID,
+	runID uuid.UUID,
+	initialInput []byte,
+) (uuid.UUID, error) {
+	_ = s.repo.UpdateWorkflowRunStatus(ctx, db.UpdateWorkflowRunStatusParams{
+		ID:     runID,
+		Status: "running",
+		ErrorMessage: sql.NullString{
+			Valid: false,
+		},
+	})
 
 	failRun := func(execCtx context.Context, execErr error) error {
 		_ = s.repo.UpdateWorkflowRunStatus(execCtx, db.UpdateWorkflowRunStatusParams{
@@ -615,8 +662,26 @@ func (s *WorkflowService) RunWorkflowWithInput(
 			return err
 		}
 
+		s.Publish(workflowID.String(), map[string]any{
+			"type":      "step_status",
+			"step_id":   step.ID.String(),
+			"step_type": step.StepType,
+			"status":    "running",
+			"message":   step.StepType + " started",
+		})
+
 		output, err := exec.ExecuteStep(step, nodeInputs[stepID])
 		if err != nil {
+
+			s.Publish(workflowID.String(), map[string]any{
+				"type":      "step_status",
+				"step_id":   step.ID.String(),
+				"step_type": step.StepType,
+				"status":    "failed",
+				"message":   step.StepType + " failed: " + err.Error(),
+				"error":     err.Error(),
+			})
+
 			_ = s.repo.UpdateWorkflowStepRunStatus(execCtx, db.UpdateWorkflowStepRunStatusParams{
 				ID:     stepRunID,
 				Status: "failed",
@@ -648,8 +713,16 @@ func (s *WorkflowService) RunWorkflowWithInput(
 			return err
 		}
 
+		s.Publish(workflowID.String(), map[string]any{
+			"type":      "step_status",
+			"step_id":   step.ID.String(),
+			"step_type": step.StepType,
+			"status":    "success",
+			"message":   step.StepType + " completed successfully",
+		})
+
 		fmt.Println("===================================")
-		fmt.Println("CURRENT STEP:", step.StepType)
+		log.Println("CURRENT STEP:", step.StepType)
 		fmt.Println("CURRENT STEP ID:", stepID)
 		fmt.Println("NEXT EDGES:", nextSteps[stepID])
 
@@ -697,22 +770,18 @@ func (s *WorkflowService) RunWorkflowWithInput(
 		return nil
 	}
 
-	go func() {
-		bgCtx := context.Background()
+	if err := executeNode(ctx, startStepID); err != nil {
+		_ = failRun(ctx, err)
+		return runID, err
+	}
 
-		if err := executeNode(bgCtx, startStepID); err != nil {
-			_ = failRun(bgCtx, err)
-			return
-		}
-
-		_ = s.repo.UpdateWorkflowRunStatus(bgCtx, db.UpdateWorkflowRunStatusParams{
-			ID:     runID,
-			Status: "success",
-			ErrorMessage: sql.NullString{
-				Valid: false,
-			},
-		})
-	}()
+	_ = s.repo.UpdateWorkflowRunStatus(ctx, db.UpdateWorkflowRunStatusParams{
+		ID:     runID,
+		Status: "success",
+		ErrorMessage: sql.NullString{
+			Valid: false,
+		},
+	})
 
 	return runID, nil
 }
@@ -852,4 +921,42 @@ func (s *WorkflowService) GetWorkflowSchedule(
 			UserID: userID,
 		},
 	)
+}
+
+func (s *WorkflowService) Subscribe(workflowID string) chan any {
+	ch := make(chan any, 10)
+
+	s.mu.Lock()
+	s.subscribers[workflowID] = append(s.subscribers[workflowID], ch)
+	s.mu.Unlock()
+
+	return ch
+}
+
+func (s *WorkflowService) Unsubscribe(workflowID string, ch chan any) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	channels := s.subscribers[workflowID]
+
+	for i, subscriber := range channels {
+		if subscriber == ch {
+			s.subscribers[workflowID] = append(channels[:i], channels[i+1:]...)
+			close(ch)
+			break
+		}
+	}
+}
+
+func (s *WorkflowService) Publish(workflowID string, data any) {
+	s.mu.Lock()
+	channels := s.subscribers[workflowID]
+	s.mu.Unlock()
+
+	for _, ch := range channels {
+		select {
+		case ch <- data:
+		default:
+		}
+	}
 }

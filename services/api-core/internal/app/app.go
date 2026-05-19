@@ -7,8 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
-	tokenstore "org/api-core/internal/auth/tokenStore"
+	tokenstore "org/api-core/internal/auth/tokenstore"
 	"org/api-core/internal/db"
+	"org/api-core/internal/queue"
 	"org/api-core/internal/router"
 	"org/api-core/internal/scheduler"
 	workflowRepository "org/api-core/internal/workflow/repository"
@@ -28,7 +29,11 @@ func New() *gin.Engine {
 	router.RegisterRoutes(r)
 
 	workflowRepo := workflowRepository.NewSQLCWorkflowRepository(db.QueriesInstance)
-	workflowService := workflowServicePkg.NewWorkflowService(workflowRepo)
+	workflowQueue := queue.NewRedisQueue(tokenstore.RDB)
+	workflowService := workflowServicePkg.NewWorkflowService(
+		workflowRepo,
+		workflowQueue,
+	)
 
 	schedulerWorker := scheduler.NewScheduler(workflowService)
 	schedulerWorker.Start(context.Background())

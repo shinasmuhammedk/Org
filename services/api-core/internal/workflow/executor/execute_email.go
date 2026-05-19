@@ -34,6 +34,7 @@ func (e *Executor) executeEmail(
 				placeholder := "{{trigger." + key + "}}"
 
 				valueString := fmt.Sprintf("%v", value)
+                fmt.Println("placeholder is "+placeholder)
 
 				cfg.Body = strings.ReplaceAll(
 					cfg.Body,

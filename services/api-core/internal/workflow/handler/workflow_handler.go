@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"io"
 	"log"
 
 	"Org/utils/response"
@@ -506,4 +507,26 @@ func (h *WorkflowHandler) GetWorkflowSchedule(c *gin.Context) {
 	}
 
 	response.OK(c, "workflow schedule fetched", schedule)
+}
+
+
+
+func (h *WorkflowHandler) StreamWorkflowEvents(c *gin.Context){
+    workflowID := c.Param("id")
+    
+    c.Header("Content-Type", "text/event-stream")
+    c.Header("Cache-Control", "no-cache")
+    c.Header("Connection", "keep-alive")
+    c.Header("Access-Control-Allow-Origin", "http://localhost:5173")
+    
+    eventChan := h.workflowService.Subscribe(workflowID)
+    defer h.workflowService.Unsubscribe(workflowID, eventChan)
+    
+    c.Stream(func(w io.Writer) bool {
+        if msg,ok := <- eventChan; ok{
+            c.SSEvent("workflow_update", msg)
+            return true
+        }
+        return false
+    })
 }

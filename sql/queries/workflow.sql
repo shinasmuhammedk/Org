@@ -182,7 +182,8 @@ WHERE schedule_enabled = true
   AND next_run_at IS NOT NULL
   AND next_run_at <= NOW()
   AND is_active = true
-  AND is_schedule_running = false;
+  AND is_schedule_running = false
+  AND trigger_type = 'schedule';
 
 -- name: MarkWorkflowScheduleRun :exec
 UPDATE workflows

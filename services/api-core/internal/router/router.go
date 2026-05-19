@@ -1,6 +1,8 @@
 package router
 
 import (
+	"context"
+
 	"github.com/gin-gonic/gin"
 
 	"org/api-core/internal/auth/handler"
@@ -8,6 +10,8 @@ import (
 	"org/api-core/internal/auth/middleware"
 	authRepository "org/api-core/internal/auth/repository"
 	authServicePkg "org/api-core/internal/auth/service"
+	tokenstore "org/api-core/internal/auth/tokenstore"
+	"org/api-core/internal/worker"
 
 	"org/api-core/internal/db"
 
@@ -16,12 +20,13 @@ import (
 	oauthServicePkg "org/api-core/internal/oauth/service"
 
 	billingHandler "org/api-core/internal/billing"
+	"org/api-core/internal/queue"
+	usageHandlerPkg "org/api-core/internal/usage/handler"
 	usageRepository "org/api-core/internal/usage/repository"
 	usageServicePkg "org/api-core/internal/usage/service"
 	workflowHandlerPkg "org/api-core/internal/workflow/handler"
 	workflowRepository "org/api-core/internal/workflow/repository"
 	workflowServicePkg "org/api-core/internal/workflow/service"
-    usageHandlerPkg "org/api-core/internal/usage/handler"
 )
 
 func RegisterRoutes(r *gin.Engine) {
@@ -30,7 +35,7 @@ func RegisterRoutes(r *gin.Engine) {
 	authRoutes(r)
 	oauthRoutes(r)
 	workflowRoutes(r)
-    billingRoutes(r)
+	billingRoutes(r)
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -58,7 +63,6 @@ func authRoutes(r *gin.Engine) {
 	r.GET("/auth/google/callback", googleAuthHandler.GoogleAuthCallback)
 
 	r.GET("/test-billing", handler.TestBilling)
-
 }
 
 func oauthRoutes(r *gin.Engine) {
@@ -72,12 +76,31 @@ func oauthRoutes(r *gin.Engine) {
 
 func workflowRoutes(r *gin.Engine) {
 	workflowRepo := workflowRepository.NewSQLCWorkflowRepository(db.QueriesInstance)
-	workflowService := workflowServicePkg.NewWorkflowService(workflowRepo)
+
+	workflowQueue := queue.NewRedisQueue(tokenstore.RDB)
+
+	workflowService := workflowServicePkg.NewWorkflowService(
+		workflowRepo,
+		workflowQueue,
+	)
+
+	workflowWorker := worker.NewWorkflowWorker(
+		workflowQueue,
+		workflowService,
+	)
+
+	go workflowWorker.Start(context.Background())
+
 	usageRepo := usageRepository.NewPostgresRepository(db.QueriesInstance)
 	usageService := usageServicePkg.NewService(usageRepo)
-	workflowHandler := workflowHandlerPkg.NewWorkflowHandler(workflowService, usageService)
+
+	workflowHandler := workflowHandlerPkg.NewWorkflowHandler(
+		workflowService,
+		usageService,
+	)
 
 	r.POST("/webhooks/:webhookID", workflowHandler.HandleWebhookTrigger)
+	r.GET("/workflows/:id/events", workflowHandler.StreamWorkflowEvents)
 
 	auth := r.Group("/", middleware.AuthMiddleware())
 
@@ -85,19 +108,19 @@ func workflowRoutes(r *gin.Engine) {
 	auth.GET("/workflows", workflowHandler.ListWorkflows)
 	auth.DELETE("/workflows/:id", workflowHandler.DeleteWorkflow)
 
-	// Single step routes
 	auth.POST("/workflows/:id/steps", workflowHandler.CreateStep)
 
-	// Canvas save/load routes
 	auth.PUT("/workflows/:id/steps", workflowHandler.SaveWorkflowSteps)
 	auth.GET("/workflows/:id/steps", workflowHandler.GetWorkflowSteps)
 
-    auth.PUT("/workflows/:id/schedule", workflowHandler.UpdateWorkflowSchedule)
+	auth.PUT("/workflows/:id/schedule", workflowHandler.UpdateWorkflowSchedule)
+	auth.GET("/workflows/:id/schedule", workflowHandler.GetWorkflowSchedule)
+
 	auth.POST("/workflows/:id/run", workflowHandler.RunWorkflow)
 	auth.GET("/workflows/:id/runs", workflowHandler.ListWorkflowRuns)
 	auth.GET("/workflow-runs/:id/steps", workflowHandler.ListWorkflowStepRuns)
+
 	auth.GET("/workflows/:id/edges", workflowHandler.GetWorkflowEdges)
-    auth.GET("/workflows/:id/schedule", workflowHandler.GetWorkflowSchedule)
 }
 
 func billingRoutes(r *gin.Engine) {
@@ -111,5 +134,5 @@ func billingRoutes(r *gin.Engine) {
 	billing.POST("/checkout", billingHandler.CreateCheckoutSession)
 	billing.GET("/subscription", billingHandler.GetSubscription)
 	billing.GET("/usage", usageHandler.GetUsage)
-    billing.POST("/portal", billingHandler.CreatePortalSession)
+	billing.POST("/portal", billingHandler.CreatePortalSession)
 }
