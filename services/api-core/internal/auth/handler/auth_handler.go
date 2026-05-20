@@ -1,14 +1,15 @@
 package handler
 
 import (
-	"Org/utils/response"
 	"context"
 	"fmt"
 	"org/api-core/internal/auth/service"
 	"org/api-core/internal/billing"
+	"org/api-core/internal/utils/response"
+
+	pb "org/api-core/proto"
 
 	"github.com/gin-gonic/gin"
-	pb "org/api-core/proto"
 )
 
 type AuthHandler struct {

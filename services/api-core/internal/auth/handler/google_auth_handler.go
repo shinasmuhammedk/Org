@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"os"
 
-	"Org/utils/response"
 	"org/api-core/internal/auth/service"
 	"org/api-core/internal/oauth/provider"
+	"org/api-core/internal/utils/response"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"

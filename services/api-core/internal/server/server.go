@@ -42,12 +42,13 @@ func (s *Server) Run() {
 	log.Println("🛑 Shutting down server...")
 
 	// Graceful shutdown with timeout
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
 	if err := s.httpServer.Shutdown(ctx); err != nil {
-		log.Fatal("❌ forced shutdown:", err)
+		log.Println("⚠️ shutdown timeout:", err)
 	}
+
 
 	log.Println("✅ Server exited cleanly")
 }

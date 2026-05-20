@@ -22,7 +22,7 @@ func New() *gin.Engine {
 	}
 
 	db.Init()
-	tokenstore.InitRedis("127.0.0.1:6379")
+	tokenstore.InitRedis()
 
 	r := gin.Default()
 

@@ -1,7 +1,7 @@
 package response
 
 import (
-	"Org/utils/constants"
+	"org/api-core/internal/utils/constants"
 
 	"github.com/gin-gonic/gin"
 )

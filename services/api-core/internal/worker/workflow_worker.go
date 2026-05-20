@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/google/uuid"
+	"github.com/redis/go-redis/v9"
 
 	"org/api-core/internal/queue"
 	workflowServicePkg "org/api-core/internal/workflow/service"
@@ -30,8 +31,24 @@ func (w *WorkflowWorker) Start(ctx context.Context) {
 	log.Println("workflow worker started")
 
 	for {
+		select {
+		case <-ctx.Done():
+			log.Println("workflow worker stopped")
+			return
+		default:
+		}
+
 		payload, err := w.queue.Pop(ctx)
 		if err != nil {
+			if ctx.Err() != nil {
+				log.Println("workflow worker stopped")
+				return
+			}
+
+			if err == redis.Nil {
+				continue
+			}
+
 			log.Println("failed to pop workflow job:", err)
 			continue
 		}

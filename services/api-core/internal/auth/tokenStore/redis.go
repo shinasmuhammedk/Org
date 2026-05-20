@@ -2,6 +2,7 @@ package tokenstore
 
 import (
 	"context"
+	"os"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -12,7 +13,12 @@ var ctx = context.Background()
 var RDB *redis.Client
 
 // Initialize Redis (call this in main)
-func InitRedis(addr string) {
+func InitRedis() {
+	addr := os.Getenv("REDIS_ADDR")
+	if addr == "" {
+		addr = "127.0.0.1:6379"
+	}
+
 	RDB = redis.NewClient(&redis.Options{
 		Addr: addr,
 	})

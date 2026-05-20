@@ -2,6 +2,7 @@ package queue
 
 import (
 	"context"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -23,7 +24,7 @@ func (q *RedisQueue) Push(ctx context.Context, payload []byte) error {
 }
 
 func (q *RedisQueue) Pop(ctx context.Context) ([]byte, error) {
-	result, err := q.client.BRPop(ctx, 0, workflowQueue).Result()
+	result, err := q.client.BRPop(ctx, 5*time.Second, workflowQueue).Result()
 	if err != nil {
 		return nil, err
 	}
