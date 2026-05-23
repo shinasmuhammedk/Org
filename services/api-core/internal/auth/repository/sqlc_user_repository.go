@@ -23,10 +23,14 @@ func (r *SQLCUserRepository) GetUserByEmail(ctx context.Context, email string) (
 	return r.q.GetUserByEmail(ctx, email)
 }
 
-func (r *SQLCUserRepository) UpdateUserPassword(ctx context.Context, params db.UpdateUserPasswordParams)error{
-    return r.q.UpdateUserPassword(ctx, params)
+func (r *SQLCUserRepository) UpdateUserPassword(ctx context.Context, params db.UpdateUserPasswordParams) error {
+	return r.q.UpdateUserPassword(ctx, params)
 }
 
-func (r *SQLCUserRepository) VerifyUser(ctx context.Context,id uuid.UUID)error{
-    return r.q.VerifyUser(ctx, id)
+func (r *SQLCUserRepository) VerifyUser(ctx context.Context, id uuid.UUID) error {
+	return r.q.VerifyUser(ctx, id)
+}
+
+func (r *SQLCUserRepository) GetUserByID(ctx context.Context, id uuid.UUID) (db.GetUserByIDRow, error) {
+	return r.q.GetUserByID(ctx, id)
 }

@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -82,6 +83,33 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.Password,
 		&i.IsVerified,
 		&i.Plan,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getUserByID = `-- name: GetUserByID :one
+SELECT id, email, plan, is_verified, created_at
+FROM users
+WHERE id = $1
+`
+
+type GetUserByIDRow struct {
+	ID         uuid.UUID
+	Email      string
+	Plan       sql.NullString
+	IsVerified bool
+	CreatedAt  sql.NullTime
+}
+
+func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (GetUserByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByID, id)
+	var i GetUserByIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Plan,
+		&i.IsVerified,
 		&i.CreatedAt,
 	)
 	return i, err

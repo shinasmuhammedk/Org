@@ -80,13 +80,23 @@ func (e *Executor) executeHTTPRequest(config []byte, input []byte) ([]byte, erro
 		return nil, err
 	}
 
-	result := map[string]interface{}{
+	var output map[string]interface{}
+
+	if len(input) > 0 {
+		if err := json.Unmarshal(input, &output); err != nil {
+			output = map[string]interface{}{}
+		}
+	} else {
+		output = map[string]interface{}{}
+	}
+
+	output["http"] = map[string]interface{}{
 		"status_code": resp.StatusCode,
 		"status":      resp.Status,
 		"body":        string(responseBody),
 	}
 
-	resultBytes, err := json.Marshal(result)
+	resultBytes, err := json.Marshal(output)
 	if err != nil {
 		return nil, err
 	}

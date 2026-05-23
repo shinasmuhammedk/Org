@@ -81,7 +81,7 @@ func (e *Executor) executeStepOnce(
 		return e.executeCondition(step.Config, input)
 
 	case "delay":
-		return e.executeDelay(step.Config)
+		return e.executeDelay(step.Config,input)
 
 	case "email":
 		return e.executeEmail(step.Config, input)

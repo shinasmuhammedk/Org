@@ -42,7 +42,7 @@ func (e *Executor) executeCondition(config []byte, input []byte) ([]byte, error)
 		return nil, fmt.Errorf("unsupported condition operator: %s", cfg.Operator)
 	}
 
-	return json.Marshal(map[string]bool{
-		"result": result,
-	})
+	inputMap["condition_result"] = result
+
+	return json.Marshal(inputMap)
 }

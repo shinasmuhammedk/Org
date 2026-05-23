@@ -47,9 +47,12 @@ func SendPasswordResetEmail(to string, token string) error {
 	smtpPort := os.Getenv("SMTP_PORT")
 	smtpEmail := os.Getenv("SMTP_EMAIL")
 	smtpPassword := os.Getenv("SMTP_PASSWORD")
-	frontendURL := os.Getenv("FRONTEND_URL")
+	frontendURL := os.Getenv("APP_URL")
 
 	resetLink := fmt.Sprintf("%s/reset-password?token=%s", frontendURL, token)
+    
+    fmt.Println(frontendURL)
+    fmt.Println(resetLink)
 
 	subject := "Subject: Reset your password\r\n"
 	mime := "MIME-version: 1.0;\r\nContent-Type: text/html; charset=\"UTF-8\";\r\n\r\n"

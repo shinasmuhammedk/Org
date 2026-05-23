@@ -286,3 +286,11 @@ func (s *AuthService) GetOrCreateGoogleUser(ctx context.Context, email string) (
 		RefreshToken: refreshToken,
 	}, nil
 }
+
+
+func (s *AuthService) GetUserByID(
+	ctx context.Context,
+	userID uuid.UUID,
+) (db.GetUserByIDRow, error) {
+	return s.userRepo.GetUserByID(ctx, userID)
+}

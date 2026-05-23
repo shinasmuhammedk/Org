@@ -21,3 +21,9 @@ WHERE id = $2;
 INSERT INTO users (id, email, password, is_verified)
 VALUES ($1, $2, '', true)
 RETURNING id, email, password, is_verified, plan, created_at;
+
+
+-- name: GetUserByID :one
+SELECT id, email, plan, is_verified, created_at
+FROM users
+WHERE id = $1;

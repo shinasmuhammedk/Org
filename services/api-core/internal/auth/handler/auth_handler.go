@@ -6,10 +6,12 @@ import (
 	"org/api-core/internal/auth/service"
 	"org/api-core/internal/billing"
 	"org/api-core/internal/utils/response"
+	"time"
 
 	pb "org/api-core/proto"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type AuthHandler struct {
@@ -21,6 +23,15 @@ func NewAuthHandler(authService *service.AuthService) *AuthHandler {
 		authService: authService,
 	}
 }
+
+type MeResponse struct {
+	ID         uuid.UUID `json:"id"`
+	Email      string    `json:"email"`
+	Plan       string    `json:"plan"`
+	IsVerified bool      `json:"is_verified"`
+	CreatedAt  string    `json:"created_at"`
+}
+
 
 func (h *AuthHandler) Signup(c *gin.Context) {
 	var body struct {
@@ -76,15 +87,33 @@ func (h *AuthHandler) Login(c *gin.Context) {
 }
 
 func (h *AuthHandler) Me(c *gin.Context) {
-	userID, exists := c.Get("user_id")
+	userIDValue, exists := c.Get("user_id")
 	if !exists {
-		response.Unauthorized(c, "unauthorized")
+		response.Unauthorized(c, "user not authenticated")
 		return
 	}
 
-	response.OK(c, "you are authenticated", gin.H{
-		"user_id": userID,
-	})
+	userID, err := uuid.Parse(userIDValue.(string))
+	if err != nil {
+		response.BadRequest(c, "invalid user id", nil)
+		return
+	}
+
+	user, err := h.authService.GetUserByID(c.Request.Context(), userID)
+	if err != nil {
+		response.InternalServerError(c, "failed to fetch user profile", err)
+		return
+	}
+
+	res := MeResponse{
+		ID:         user.ID,
+		Email:      user.Email,
+		Plan:       user.Plan.String,
+		IsVerified: user.IsVerified,
+		CreatedAt:  user.CreatedAt.Time.Format(time.RFC3339),
+	}
+
+	response.OK(c, "user profile fetched successfully", res)
 }
 
 func (h *AuthHandler) VerifyEmail(c *gin.Context) {

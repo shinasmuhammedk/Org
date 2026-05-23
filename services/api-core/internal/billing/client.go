@@ -3,6 +3,7 @@ package billing
 import (
 	"context"
 	"log"
+	"os"
 
 	pb "org/api-core/proto"
 
@@ -13,8 +14,14 @@ import (
 var Client pb.BillingServiceClient
 
 func Connect() {
+	addr := os.Getenv("BILLING_GRPC_ADDR")
+
+	if addr == "" {
+		addr = "localhost:50052"
+	}
+
 	conn, err := grpc.Dial(
-		"localhost:50052",
+		addr,
 		grpc.WithTransportCredentials(
 			insecure.NewCredentials(),
 		),
@@ -28,7 +35,6 @@ func Connect() {
 
 	log.Println("Connected to billing service")
 }
-
 
 func GetUserSubscription(
 	userID string,
