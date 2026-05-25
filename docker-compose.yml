@@ -20,6 +20,7 @@ services:
   billing-service:
     image: org-billing-service
     container_name: org-billing-service
+    restart: unless-stopped
     depends_on:
       - postgres
     ports:
@@ -37,7 +38,7 @@ services:
   api-core:
     build:
       context: ./services/api-core
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     image: org-api-core
     container_name: org-api-core
     depends_on:
@@ -46,6 +47,8 @@ services:
       - billing-service
     ports:
       - "8080:8080"
+    volumes:
+      - ./services/api-core:/app
     env_file:
       - ./services/api-core/.env
     environment:

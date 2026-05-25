@@ -9,6 +9,7 @@ import (
 
 	tokenstore "org/api-core/internal/auth/tokenstore"
 	"org/api-core/internal/db"
+	"org/api-core/internal/logger"
 	"org/api-core/internal/queue"
 	"org/api-core/internal/router"
 	"org/api-core/internal/scheduler"
@@ -24,15 +25,22 @@ func New() *gin.Engine {
 	db.Init()
 	tokenstore.InitRedis()
 
+	appLogger := logger.New()
+
+	appLogger.Info("api-core starting", "service", "api-core")
+
 	r := gin.Default()
 
-	router.RegisterRoutes(r)
+	router.RegisterRoutes(r,appLogger)
 
 	workflowRepo := workflowRepository.NewSQLCWorkflowRepository(db.QueriesInstance)
+
 	workflowQueue := queue.NewRedisQueue(tokenstore.RDB)
+
 	workflowService := workflowServicePkg.NewWorkflowService(
 		workflowRepo,
 		workflowQueue,
+		appLogger,
 	)
 
 	schedulerWorker := scheduler.NewScheduler(workflowService)

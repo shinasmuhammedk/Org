@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"log/slog"
 	"strings"
 
 	"org/api-core/internal/db"
@@ -14,11 +15,13 @@ import (
 
 type OAuthService struct {
 	accountRepo repository.ConnectedAccountRepository
+	logger      *slog.Logger
 }
 
-func NewOAuthService(accountRepo repository.ConnectedAccountRepository) *OAuthService {
+func NewOAuthService(accountRepo repository.ConnectedAccountRepository, logger *slog.Logger) *OAuthService {
 	return &OAuthService{
 		accountRepo: accountRepo,
+		logger:      logger,
 	}
 }
 
@@ -28,6 +31,10 @@ func (s *OAuthService) SaveGoogleAccount(
 	token *oauth2.Token,
 	scopes []string,
 ) error {
+	s.logger.Info("saving google account",
+		"user_id", userID.String(),
+	)
+
 	_, err := s.accountRepo.UpsertConnectedAccount(ctx, db.UpsertConnectedAccountParams{
 		UserID:      userID,
 		Provider:    "google",
@@ -45,5 +52,16 @@ func (s *OAuthService) SaveGoogleAccount(
 			Valid:  len(scopes) > 0,
 		},
 	})
-	return err
+	if err != nil {
+		s.logger.Error("failed to save google account",
+			"user_id", userID.String(),
+			"error", err.Error(),
+		)
+		return err
+	}
+
+	s.logger.Info("google account saved successfully",
+		"user_id", userID.String(),
+	)
+	return nil
 }

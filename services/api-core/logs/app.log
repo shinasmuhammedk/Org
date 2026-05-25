@@ -1,0 +1,120 @@
+{"time":"2026-05-23T10:04:36.265436375Z","level":"INFO","msg":"api-core starting","service":"api-core"}
+{"time":"2026-05-23T10:09:21.499708343Z","level":"INFO","msg":"api-core starting","service":"api-core"}
+{"time":"2026-05-23T10:09:40.237840151Z","level":"INFO","msg":"api-core starting","service":"api-core"}
+{"time":"2026-05-25T04:23:37.586215741Z","level":"INFO","msg":"api-core starting","service":"api-core"}
+{"time":"2026-05-25T04:27:37.085606282Z","level":"INFO","msg":"api-core starting","service":"api-core"}
+{"time":"2026-05-25T04:27:37.720508204Z","level":"INFO","msg":"api-core starting","service":"api-core"}
+{"time":"2026-05-25T04:27:39.25399888Z","level":"INFO","msg":"api-core starting","service":"api-core"}
+{"time":"2026-05-25T04:28:15.481915228Z","level":"INFO","msg":"signup started","email":"yadhukrishnangta@gmail.com"}
+{"time":"2026-05-25T04:28:19.820411086Z","level":"INFO","msg":"signup completed successfully","user_id":"6380b958-e1fe-4da2-a091-e0ba526f5d46","email":"yadhukrishnangta@gmail.com"}
+{"time":"2026-05-25T04:29:53.574468835Z","level":"INFO","msg":"api-core starting","service":"api-core"}
+{"time":"2026-05-25T04:31:46.744494648Z","level":"INFO","msg":"api-core starting","service":"api-core"}
+{"time":"2026-05-25T04:32:07.669639076Z","level":"INFO","msg":"api-core starting","service":"api-core"}
+{"time":"2026-05-25T04:32:27.102131132Z","level":"INFO","msg":"login started","email":"shinascontact@gmail.com"}
+{"time":"2026-05-25T04:32:27.165026588Z","level":"WARN","msg":"login failed: invalid password","email":"shinascontact@gmail.com"}
+{"time":"2026-05-25T04:32:27.165396066Z","level":"WARN","msg":"login failed","email":"shinascontact@gmail.com","error":"invalid credentials"}
+{"time":"2026-05-25T04:32:49.055206248Z","level":"INFO","msg":"login started","email":"shinascontact@gmail.com"}
+{"time":"2026-05-25T04:32:49.129243246Z","level":"INFO","msg":"login completed successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","email":"shinascontact@gmail.com"}
+{"time":"2026-05-25T04:32:49.129783759Z","level":"INFO","msg":"login successful","email":"shinascontact@gmail.com"}
+{"time":"2026-05-25T04:36:21.26818847Z","level":"INFO","msg":"api-core starting","service":"api-core"}
+{"time":"2026-05-25T04:37:29.166315489Z","level":"INFO","msg":"api-core starting","service":"api-core"}
+{"time":"2026-05-25T04:53:14.764174127Z","level":"INFO","msg":"api-core starting","service":"api-core"}
+{"time":"2026-05-25T04:53:35.122632264Z","level":"INFO","msg":"login started","email":"shinascontact@gmail.com"}
+{"time":"2026-05-25T04:53:35.206425761Z","level":"INFO","msg":"login completed successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","email":"shinascontact@gmail.com"}
+{"time":"2026-05-25T04:53:35.206778283Z","level":"INFO","msg":"login successful","email":"shinascontact@gmail.com"}
+{"time":"2026-05-25T04:53:35.250619031Z","level":"INFO","msg":"me profile fetch requested"}
+{"time":"2026-05-25T04:53:35.252077524Z","level":"INFO","msg":"get user by id started","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-25T04:53:35.258226186Z","level":"INFO","msg":"get user by id completed successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-25T04:53:35.260815493Z","level":"INFO","msg":"me profile fetched successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","email":"shinascontact@gmail.com"}
+{"time":"2026-05-25T04:53:35.264399411Z","level":"INFO","msg":"me profile fetch requested"}
+{"time":"2026-05-25T04:53:35.267552259Z","level":"INFO","msg":"get user by id started","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-25T04:53:35.273695283Z","level":"INFO","msg":"get user by id completed successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-25T04:53:35.274418575Z","level":"INFO","msg":"me profile fetched successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","email":"shinascontact@gmail.com"}
+{"time":"2026-05-25T04:53:36.701930832Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-05-25T04:53:36.703282415Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-25T04:53:36.715198246Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":4}
+{"time":"2026-05-25T04:53:36.715687518Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":4}
+{"time":"2026-05-25T04:53:36.719074422Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-05-25T04:53:36.719360656Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-25T04:53:36.72098633Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":4}
+{"time":"2026-05-25T04:53:36.721275771Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":4}
+{"time":"2026-05-25T04:53:37.343222395Z","level":"INFO","msg":"get workflow steps request received"}
+{"time":"2026-05-25T04:53:37.343831145Z","level":"INFO","msg":"getting workflow steps","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-25T04:53:37.352454104Z","level":"INFO","msg":"SSE stream started","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff"}
+{"time":"2026-05-25T04:53:37.355481195Z","level":"INFO","msg":"client subscribed to workflow events","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff"}
+{"time":"2026-05-25T04:53:37.355133506Z","level":"INFO","msg":"workflow steps retrieved","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","count":2}
+{"time":"2026-05-25T04:53:37.357354352Z","level":"INFO","msg":"get workflow steps: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff"}
+{"time":"2026-05-25T04:53:37.360782148Z","level":"INFO","msg":"get workflow steps request received"}
+{"time":"2026-05-25T04:53:37.365886647Z","level":"INFO","msg":"getting workflow steps","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-25T04:53:37.366793695Z","level":"INFO","msg":"get workflow edges request received"}
+{"time":"2026-05-25T04:53:37.368359897Z","level":"INFO","msg":"workflow steps retrieved","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","count":2}
+{"time":"2026-05-25T04:53:37.369051134Z","level":"INFO","msg":"get workflow steps: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff"}
+{"time":"2026-05-25T04:53:37.368254367Z","level":"INFO","msg":"getting workflow edges","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-25T04:53:37.380492359Z","level":"INFO","msg":"workflow edges retrieved","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","count":1}
+{"time":"2026-05-25T04:53:37.381606799Z","level":"INFO","msg":"get workflow edges: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","count":1}
+{"time":"2026-05-25T04:53:37.386637777Z","level":"INFO","msg":"get workflow edges request received"}
+{"time":"2026-05-25T04:53:37.387364394Z","level":"INFO","msg":"getting workflow edges","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-25T04:53:37.389302924Z","level":"INFO","msg":"workflow edges retrieved","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","count":1}
+{"time":"2026-05-25T04:53:37.389767054Z","level":"INFO","msg":"get workflow edges: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","count":1}
+{"time":"2026-05-25T04:53:37.391472748Z","level":"INFO","msg":"list workflow runs request received"}
+{"time":"2026-05-25T04:53:37.392186306Z","level":"INFO","msg":"listing workflow runs","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-25T04:53:37.395989148Z","level":"INFO","msg":"workflow runs listed","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","count":3}
+{"time":"2026-05-25T04:53:37.396663414Z","level":"INFO","msg":"list workflow runs: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","count":3}
+{"time":"2026-05-25T04:53:37.428158416Z","level":"INFO","msg":"list workflow runs request received"}
+{"time":"2026-05-25T04:53:37.430245854Z","level":"INFO","msg":"listing workflow runs","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-25T04:53:37.43296217Z","level":"INFO","msg":"workflow runs listed","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","count":3}
+{"time":"2026-05-25T04:53:37.433680348Z","level":"INFO","msg":"list workflow runs: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","count":3}
+{"time":"2026-05-25T04:53:47.050236507Z","level":"INFO","msg":"run workflow request received"}
+{"time":"2026-05-25T04:53:47.053389724Z","level":"INFO","msg":"checking workflow run eligibility","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","plan":"pro"}
+{"time":"2026-05-25T04:53:47.058009072Z","level":"INFO","msg":"workflow allowed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","runs":5,"limit":10000}
+{"time":"2026-05-25T04:53:47.058803808Z","level":"INFO","msg":"queuing workflow run","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-25T04:53:47.07992728Z","level":"INFO","msg":"workflow queued successfully","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988"}
+{"time":"2026-05-25T04:53:47.080483703Z","level":"INFO","msg":"incrementing workflow run","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-25T04:53:47.080569754Z","level":"INFO","msg":"executing workflow run","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988"}
+{"time":"2026-05-25T04:53:47.087738646Z","level":"INFO","msg":"workflow run incremented successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-25T04:53:47.088005631Z","level":"INFO","msg":"run workflow: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988"}
+{"time":"2026-05-25T04:53:47.598499451Z","level":"INFO","msg":"list workflow step runs request received"}
+{"time":"2026-05-25T04:53:47.598909489Z","level":"INFO","msg":"listing workflow step runs","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988"}
+{"time":"2026-05-25T04:53:47.601073745Z","level":"INFO","msg":"workflow step runs listed","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:47.601682234Z","level":"INFO","msg":"list workflow step runs: success","run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:48.097021576Z","level":"INFO","msg":"list workflow step runs request received"}
+{"time":"2026-05-25T04:53:48.097693853Z","level":"INFO","msg":"listing workflow step runs","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988"}
+{"time":"2026-05-25T04:53:48.098864611Z","level":"INFO","msg":"workflow step runs listed","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:48.099326933Z","level":"INFO","msg":"list workflow step runs: success","run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:48.596602102Z","level":"INFO","msg":"list workflow step runs request received"}
+{"time":"2026-05-25T04:53:48.59814391Z","level":"INFO","msg":"listing workflow step runs","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988"}
+{"time":"2026-05-25T04:53:48.606970218Z","level":"INFO","msg":"workflow step runs listed","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:48.60992985Z","level":"INFO","msg":"list workflow step runs: success","run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:49.095924054Z","level":"INFO","msg":"list workflow step runs request received"}
+{"time":"2026-05-25T04:53:49.096726023Z","level":"INFO","msg":"listing workflow step runs","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988"}
+{"time":"2026-05-25T04:53:49.097967967Z","level":"INFO","msg":"workflow step runs listed","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:49.098329583Z","level":"INFO","msg":"list workflow step runs: success","run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:49.599487416Z","level":"INFO","msg":"list workflow step runs request received"}
+{"time":"2026-05-25T04:53:49.599972786Z","level":"INFO","msg":"listing workflow step runs","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988"}
+{"time":"2026-05-25T04:53:49.601037409Z","level":"INFO","msg":"workflow step runs listed","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:49.601551696Z","level":"INFO","msg":"list workflow step runs: success","run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:50.096461233Z","level":"INFO","msg":"list workflow step runs request received"}
+{"time":"2026-05-25T04:53:50.098218809Z","level":"INFO","msg":"listing workflow step runs","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988"}
+{"time":"2026-05-25T04:53:50.100439778Z","level":"INFO","msg":"workflow step runs listed","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:50.101029327Z","level":"INFO","msg":"list workflow step runs: success","run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:50.59546103Z","level":"INFO","msg":"list workflow step runs request received"}
+{"time":"2026-05-25T04:53:50.596945277Z","level":"INFO","msg":"listing workflow step runs","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988"}
+{"time":"2026-05-25T04:53:50.599176301Z","level":"INFO","msg":"workflow step runs listed","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:50.599438068Z","level":"INFO","msg":"list workflow step runs: success","run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:51.097021424Z","level":"INFO","msg":"list workflow step runs request received"}
+{"time":"2026-05-25T04:53:51.097510264Z","level":"INFO","msg":"listing workflow step runs","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988"}
+{"time":"2026-05-25T04:53:51.098804493Z","level":"INFO","msg":"workflow step runs listed","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:51.099130127Z","level":"INFO","msg":"list workflow step runs: success","run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:51.174093639Z","level":"INFO","msg":"workflow run completed successfully","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988"}
+{"time":"2026-05-25T04:53:51.596143807Z","level":"INFO","msg":"list workflow step runs request received"}
+{"time":"2026-05-25T04:53:51.59793795Z","level":"INFO","msg":"listing workflow step runs","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988"}
+{"time":"2026-05-25T04:53:51.599617366Z","level":"INFO","msg":"workflow step runs listed","workflow_run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:51.600371247Z","level":"INFO","msg":"list workflow step runs: success","run_id":"b7c8883e-0b8e-4370-82e4-9d01cbea6988","count":2}
+{"time":"2026-05-25T04:53:51.607436859Z","level":"INFO","msg":"list workflow runs request received"}
+{"time":"2026-05-25T04:53:51.610979252Z","level":"INFO","msg":"listing workflow runs","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-25T04:53:51.614240073Z","level":"INFO","msg":"workflow runs listed","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","count":4}
+{"time":"2026-05-25T04:53:51.620161396Z","level":"INFO","msg":"list workflow runs: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","count":4}
+{"time":"2026-05-25T04:54:14.769235129Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-25T04:54:14.777103777Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-25T04:55:14.765460443Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-25T04:55:14.767736651Z","level":"INFO","msg":"due scheduled workflows listed","count":0}

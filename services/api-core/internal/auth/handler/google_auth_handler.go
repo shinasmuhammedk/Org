@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 
@@ -17,17 +18,20 @@ import (
 
 type GoogleAuthHandler struct {
 	authService *service.AuthService
+	logger      *slog.Logger
 }
 
-func NewGoogleAuthHandler(authService *service.AuthService) *GoogleAuthHandler {
+func NewGoogleAuthHandler(authService *service.AuthService, logger *slog.Logger) *GoogleAuthHandler {
 	return &GoogleAuthHandler{
 		authService: authService,
+		logger:      logger,
 	}
 }
 
 func (h *GoogleAuthHandler) GoogleAuthStart(c *gin.Context) {
-	config := provider.GoogleAuthConfig()
+	h.logger.Info("google oauth start - redirecting to google")
 
+	config := provider.GoogleAuthConfig()
 	url := config.AuthCodeURL(
 		"oauth_signup",
 		oauth2.AccessTypeOffline,
@@ -37,9 +41,11 @@ func (h *GoogleAuthHandler) GoogleAuthStart(c *gin.Context) {
 }
 
 func (h *GoogleAuthHandler) GoogleAuthCallback(c *gin.Context) {
-	code := c.Query("code")
+	h.logger.Info("google oauth callback received")
 
+	code := c.Query("code")
 	if code == "" {
+		h.logger.Warn("google oauth callback: missing code")
 		response.BadRequest(c, "code missing", nil)
 		return
 	}
@@ -48,6 +54,9 @@ func (h *GoogleAuthHandler) GoogleAuthCallback(c *gin.Context) {
 
 	token, err := config.Exchange(context.Background(), code)
 	if err != nil {
+		h.logger.Error("google oauth callback: token exchange failed",
+			"error", err.Error(),
+		)
 		response.InternalServerError(c, "token exchange failed", err.Error())
 		return
 	}
@@ -56,6 +65,9 @@ func (h *GoogleAuthHandler) GoogleAuthCallback(c *gin.Context) {
 
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
 	if err != nil {
+		h.logger.Error("google oauth callback: failed to fetch user info",
+			"error", err.Error(),
+		)
 		response.InternalServerError(c, "failed to fetch google user", err.Error())
 		return
 	}
@@ -68,11 +80,15 @@ func (h *GoogleAuthHandler) GoogleAuthCallback(c *gin.Context) {
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
+		h.logger.Error("google oauth callback: failed to decode user info",
+			"error", err.Error(),
+		)
 		response.InternalServerError(c, "failed to decode google user", err.Error())
 		return
 	}
 
 	if userInfo.Email == "" {
+		h.logger.Warn("google oauth callback: google account email missing")
 		response.BadRequest(c, "google account email missing", nil)
 		return
 	}
@@ -81,18 +97,25 @@ func (h *GoogleAuthHandler) GoogleAuthCallback(c *gin.Context) {
 		c.Request.Context(),
 		userInfo.Email,
 	)
-
 	if err != nil {
+		h.logger.Error("google oauth callback: failed to get or create user",
+			"email", userInfo.Email,
+			"error", err.Error(),
+		)
 		response.InternalServerError(c, "google auth failed", err.Error())
 		return
 	}
-	frontendURL := os.Getenv("APP_URL")
 
+	frontendURL := os.Getenv("APP_URL")
 	redirectURL := fmt.Sprintf(
 		"%s/oauth/callback?access_token=%s&refresh_token=%s",
 		frontendURL,
 		tokenPair.AccessToken,
 		tokenPair.RefreshToken,
+	)
+
+	h.logger.Info("google oauth callback successful",
+		"email", userInfo.Email,
 	)
 
 	c.Redirect(http.StatusTemporaryRedirect, redirectURL)
