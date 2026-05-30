@@ -27,6 +27,13 @@ func (r *SQLCWorkflowRepository) GetWorkflowByID(ctx context.Context, arg db.Get
 	return r.q.GetWorkflowByID(ctx, arg)
 }
 
+func (r *SQLCWorkflowRepository) UpdateWorkflow(
+	ctx context.Context,
+	arg db.UpdateWorkflowParams,
+) (db.Workflow, error) {
+	return r.q.UpdateWorkflow(ctx, arg)
+}
+
 func (r *SQLCWorkflowRepository) DeleteWorkflow(ctx context.Context, arg db.DeleteWorkflowParams) error {
 	return r.q.DeleteWorkflow(ctx, arg)
 }

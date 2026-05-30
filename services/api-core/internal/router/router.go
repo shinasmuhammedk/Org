@@ -60,7 +60,8 @@ func authRoutes(r *gin.Engine, appLogger *slog.Logger) {
 	r.POST("/refresh", authHandler.RefreshToken)
 	r.POST("/logout", authHandler.Logout)
 
-	r.GET("/auth/google/start", googleAuthHandler.GoogleAuthStart)
+	// r.GET("/auth/google/start", googleAuthHandler.GoogleAuthStart)
+    r.GET("/auth/google/login", googleAuthHandler.GoogleAuthStart)
 	r.GET("/auth/google/callback", googleAuthHandler.GoogleAuthCallback)
 
 	r.GET("/test-billing", handler.TestBilling)
@@ -72,7 +73,7 @@ func oauthRoutes(r *gin.Engine, appLogger *slog.Logger) {
 	oauthHandler := oauthHandlerPkg.NewOAuthHandler(oauthService,appLogger)
 
 	r.GET("/oauth/google/start", middleware.AuthMiddleware(), oauthHandler.GoogleStart)
-	r.GET("/oauth/google/callback", oauthHandler.GoogleCallback)
+	// r.GET("/oauth/google/callback", oauthHandler.GoogleCallback)
 }
 
 func workflowRoutes(r *gin.Engine, appLogger *slog.Logger) {
@@ -110,6 +111,7 @@ func workflowRoutes(r *gin.Engine, appLogger *slog.Logger) {
 	auth.POST("/workflows", workflowHandler.CreateWorkflow)
 	auth.GET("/workflows", workflowHandler.ListWorkflows)
 	auth.DELETE("/workflows/:id", workflowHandler.DeleteWorkflow)
+    auth.PUT("/workflows/:id", workflowHandler.UpdateWorkflow)
 
 	auth.POST("/workflows/:id/steps", workflowHandler.CreateStep)
 

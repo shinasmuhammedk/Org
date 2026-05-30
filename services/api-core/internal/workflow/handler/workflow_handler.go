@@ -34,7 +34,8 @@ type SaveWorkflowStepsRequest struct {
 }
 
 type SaveWorkflowRequest struct {
-	Name string `json:"name"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 type UpdateWorkflowScheduleRequest struct {
@@ -796,4 +797,55 @@ func (h *WorkflowHandler) StreamWorkflowEvents(c *gin.Context) {
 		}
 		return false
 	})
+}
+
+
+
+func (h *WorkflowHandler) UpdateWorkflow(c *gin.Context) {
+	var body struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+	}
+
+	if err := c.ShouldBindJSON(&body); err != nil {
+		response.BadRequest(c, "invalid input", err.Error())
+		return
+	}
+
+	if body.Name == "" {
+		response.BadRequest(c, "workflow name is required", nil)
+		return
+	}
+
+	workflowID, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		response.BadRequest(c, "invalid workflow id", err.Error())
+		return
+	}
+
+	userIDValue, exists := c.Get("user_id")
+	if !exists {
+		response.Unauthorized(c, "unauthorized")
+		return
+	}
+
+	userID, err := uuid.Parse(userIDValue.(string))
+	if err != nil {
+		response.BadRequest(c, "invalid user id", err.Error())
+		return
+	}
+
+	workflow, err := h.workflowService.UpdateWorkflow(
+		c.Request.Context(),
+		workflowID,
+		userID,
+		body.Name,
+		body.Description,
+	)
+	if err != nil {
+		response.InternalServerError(c, "failed to update workflow", err.Error())
+		return
+	}
+
+	response.OK(c, "workflow updated successfully", workflow)
 }

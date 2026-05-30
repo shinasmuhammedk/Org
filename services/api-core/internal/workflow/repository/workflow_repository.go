@@ -11,6 +11,7 @@ type WorkflowRepository interface {
 	// Workflow
 	CreateWorkflow(ctx context.Context, arg db.CreateWorkflowParams) (db.Workflow, error)
 	ListWorkflowByUser(ctx context.Context, userID uuid.UUID) ([]db.Workflow, error)
+    UpdateWorkflow(ctx context.Context, arg db.UpdateWorkflowParams) (db.Workflow, error)
 	GetWorkflowByID(ctx context.Context, arg db.GetWorkflowByIDParams) (db.Workflow, error)
 	DeleteWorkflow(ctx context.Context, arg db.DeleteWorkflowParams) error
 

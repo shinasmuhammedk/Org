@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: Shinas
       POSTGRES_DB: Org_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - org_postgres_data:/var/lib/postgresql/data
 

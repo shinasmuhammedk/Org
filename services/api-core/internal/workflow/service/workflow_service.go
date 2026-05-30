@@ -1157,3 +1157,18 @@ func (s *WorkflowService) Publish(workflowID string, data any) {
 		}
 	}
 }
+
+func (s *WorkflowService) UpdateWorkflow(
+	ctx context.Context,
+	workflowID uuid.UUID,
+	userID uuid.UUID,
+	name string,
+	description string,
+) (db.Workflow, error) {
+	return s.repo.UpdateWorkflow(ctx, db.UpdateWorkflowParams{
+		ID:          workflowID,
+		UserID:      userID,
+		Name:        name,
+		Description: description,
+	})
+}

@@ -806,6 +806,50 @@ func (q *Queries) MarkWorkflowScheduleRun(ctx context.Context, arg MarkWorkflowS
 	return err
 }
 
+const updateWorkflow = `-- name: UpdateWorkflow :one
+UPDATE workflows
+SET
+    name = $3,
+    description = $4,
+    updated_at = NOW()
+WHERE id = $1 AND user_id = $2
+RETURNING id, user_id, name, description, trigger_type, is_active, schedule_enabled, schedule_type, schedule_value, next_run_at, last_run_at, is_schedule_running, created_at, updated_at
+`
+
+type UpdateWorkflowParams struct {
+	ID          uuid.UUID
+	UserID      uuid.UUID
+	Name        string
+	Description string
+}
+
+func (q *Queries) UpdateWorkflow(ctx context.Context, arg UpdateWorkflowParams) (Workflow, error) {
+	row := q.db.QueryRowContext(ctx, updateWorkflow,
+		arg.ID,
+		arg.UserID,
+		arg.Name,
+		arg.Description,
+	)
+	var i Workflow
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Name,
+		&i.Description,
+		&i.TriggerType,
+		&i.IsActive,
+		&i.ScheduleEnabled,
+		&i.ScheduleType,
+		&i.ScheduleValue,
+		&i.NextRunAt,
+		&i.LastRunAt,
+		&i.IsScheduleRunning,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const updateWorkflowRunStatus = `-- name: UpdateWorkflowRunStatus :exec
 UPDATE workflow_runs
 SET status = $2,

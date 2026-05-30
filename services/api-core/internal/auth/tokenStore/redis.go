@@ -24,7 +24,7 @@ func InitRedis() {
 	})
 }
 
-// Store token → userID
+// Store token → userID 
 func StoreVerificationToken(token string, userID string, ttl time.Duration) error {
 	key := "email_verify:" + token
 	return RDB.Set(ctx, key, userID, ttl).Err()

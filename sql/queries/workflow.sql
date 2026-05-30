@@ -211,3 +211,13 @@ SELECT
     last_run_at
 FROM workflows
 WHERE id = $1 AND user_id = $2;
+
+
+-- name: UpdateWorkflow :one
+UPDATE workflows
+SET
+    name = $3,
+    description = $4,
+    updated_at = NOW()
+WHERE id = $1 AND user_id = $2
+RETURNING *;

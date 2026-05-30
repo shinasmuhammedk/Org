@@ -24,10 +24,7 @@ type StepConfig struct {
 	Retry RetryConfig `json:"retry"`
 }
 
-func (e *Executor) ExecuteStep(
-	step db.WorkflowStep,
-	input []byte,
-) ([]byte, error) {
+func (e *Executor) ExecuteStep(step db.WorkflowStep, input []byte) ([]byte, error) {
 	retryConfig := getRetryConfig(step.Config)
 
 	if !retryConfig.Enabled {
@@ -60,10 +57,7 @@ func (e *Executor) ExecuteStep(
 	return nil, err
 }
 
-func (e *Executor) executeStepOnce(
-	step db.WorkflowStep,
-	input []byte,
-) ([]byte, error) {
+func (e *Executor) executeStepOnce(step db.WorkflowStep, input []byte) ([]byte, error) {
 	switch step.StepType {
 
 	case "webhook_trigger":
@@ -81,7 +75,7 @@ func (e *Executor) executeStepOnce(
 		return e.executeCondition(step.Config, input)
 
 	case "delay":
-		return e.executeDelay(step.Config,input)
+		return e.executeDelay(step.Config, input)
 
 	case "email":
 		return e.executeEmail(step.Config, input)
