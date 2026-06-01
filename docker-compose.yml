@@ -41,8 +41,7 @@ services:
       dockerfile: Dockerfile.dev
     image: org-api-core
     container_name: org-api-core
-    depends_on:
-      - postgres
+    depends_on: 
       - redis
       - billing-service
     ports:
@@ -52,11 +51,6 @@ services:
     env_file:
       - ./services/api-core/.env
     environment:
-      DB_HOST: org-postgres
-      DB_PORT: 5432
-      DB_USER: postgres
-      DB_PASSWORD: Shinas
-      DB_NAME: Org_db
       REDIS_ADDR: org-redis:6379
       BILLING_GRPC_ADDR: org-billing-service:50052
 

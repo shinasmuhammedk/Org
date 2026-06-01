@@ -12943,3 +12943,579 @@
 {"time":"2026-05-30T13:26:30.097002481Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
 {"time":"2026-05-30T13:27:30.083539276Z","level":"INFO","msg":"listing due scheduled workflows"}
 {"time":"2026-05-30T13:27:30.085749374Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T13:27:59.568418397Z","level":"INFO","msg":"api-core starting","service":"api-core"}
+{"time":"2026-05-30T13:28:08.06907566Z","level":"INFO","msg":"me profile fetch requested"}
+{"time":"2026-05-30T13:28:08.076620416Z","level":"INFO","msg":"get user by id started","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-30T13:28:08.104642668Z","level":"INFO","msg":"get user by id completed successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-30T13:28:08.144243259Z","level":"INFO","msg":"me profile fetched successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","email":"shinascontact@gmail.com"}
+{"time":"2026-05-30T13:28:08.238336676Z","level":"INFO","msg":"me profile fetch requested"}
+{"time":"2026-05-30T13:28:08.240479823Z","level":"INFO","msg":"get user by id started","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-30T13:28:08.241700289Z","level":"INFO","msg":"get user by id completed successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-30T13:28:08.242986871Z","level":"INFO","msg":"me profile fetched successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","email":"shinascontact@gmail.com"}
+{"time":"2026-05-30T13:28:08.41953783Z","level":"INFO","msg":"me profile fetch requested"}
+{"time":"2026-05-30T13:28:08.422730396Z","level":"INFO","msg":"get user by id started","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-30T13:28:08.424901494Z","level":"INFO","msg":"get user by id completed successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-30T13:28:08.426735622Z","level":"INFO","msg":"me profile fetched successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","email":"shinascontact@gmail.com"}
+{"time":"2026-05-30T13:28:08.592097871Z","level":"INFO","msg":"me profile fetch requested"}
+{"time":"2026-05-30T13:28:08.594481498Z","level":"INFO","msg":"get user by id started","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-30T13:28:08.596318724Z","level":"INFO","msg":"get user by id completed successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-30T13:28:08.597263517Z","level":"INFO","msg":"me profile fetched successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","email":"shinascontact@gmail.com"}
+{"time":"2026-05-30T13:28:09.81737031Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-05-30T13:28:09.818093946Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-30T13:28:09.821944011Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-05-30T13:28:09.822294778Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-05-30T13:28:11.047530124Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-05-30T13:28:11.050189042Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-30T13:28:11.051716379Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-05-30T13:28:11.055552038Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-05-30T13:28:12.520412753Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-05-30T13:28:12.521775907Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-30T13:28:12.524338077Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-05-30T13:28:12.525066378Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-05-30T13:28:22.384855836Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-05-30T13:28:22.385594876Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-30T13:28:22.387854953Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-05-30T13:28:22.389729779Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-05-30T13:28:23.187876935Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-05-30T13:28:23.188888468Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-05-30T13:28:23.191614546Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-05-30T13:28:23.195734248Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-05-30T13:28:59.566531612Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T13:28:59.570785158Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T13:29:59.55754082Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T13:29:59.558436904Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T13:30:59.5485136Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T13:30:59.55062647Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:15:58.556740807Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:15:58.580247529Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:16:58.525375643Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:16:58.544829806Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:17:58.496197558Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:17:58.498885729Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:18:58.474343938Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:18:58.477276525Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:19:58.451811539Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:19:58.457317934Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:20:58.436054952Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:20:58.441556078Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:21:58.416984471Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:21:58.418331694Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:22:58.405686446Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:22:58.408105573Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:23:58.39173886Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:23:58.394544927Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:24:58.37687479Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:24:58.383162062Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:25:58.364948618Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:25:58.368634524Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:26:58.352731133Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:26:58.356463477Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:27:58.338467032Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:27:58.340929426Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:28:58.324262971Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:28:58.326109007Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:29:58.308561738Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:29:58.31097807Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:30:58.296796262Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:30:58.299344074Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:31:58.283945872Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:31:58.288842516Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:32:58.271330327Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:32:58.273239036Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:33:58.260117326Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:33:58.263613639Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:34:58.24487145Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:34:58.246997657Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:35:58.234410292Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:35:58.239457581Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:36:58.222117616Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:36:58.225543737Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:37:58.209184525Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:37:58.21236015Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:38:58.199678009Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:38:58.201415983Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:39:58.188834413Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:39:58.190302668Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:40:58.177240743Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:40:58.179028432Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:41:58.166799264Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:41:58.17182549Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:42:58.153046561Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:42:58.155078226Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:43:58.142771414Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:43:58.144687373Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:44:58.132040243Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:44:58.133737122Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:45:58.120517558Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:45:58.123068069Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:46:58.110792891Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:46:58.112940162Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:47:58.098803532Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:47:58.101707153Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:48:58.088549505Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:48:58.092539565Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:49:58.076824712Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:49:58.0800414Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:50:58.064057773Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:50:58.066305248Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:51:58.056190277Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:51:58.058527242Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:52:58.044894415Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:52:58.0470254Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T16:53:58.032715822Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T16:53:58.034456426Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T17:05:44.308868007Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T17:05:44.319028508Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T17:06:44.298574834Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T17:06:44.305488395Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T17:07:44.287289323Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T17:07:44.290212961Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-30T17:08:44.277625454Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-30T17:08:44.647988395Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T14:30:45.749710538Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T14:30:45.843640809Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T14:31:45.737807192Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T14:31:45.756922814Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T14:32:45.722481518Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T14:32:45.726658793Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T14:33:45.705461307Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T14:33:45.707950881Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T14:34:45.69362776Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T14:34:45.698197447Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T14:35:45.682026225Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T14:35:45.685159219Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T14:36:45.670149942Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T14:36:45.682237992Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T14:37:45.65770967Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T14:37:45.661842236Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T14:38:45.64655911Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T14:38:45.649100858Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T14:39:45.636850884Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T14:39:45.638534727Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T14:40:45.626085938Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T14:40:45.627725488Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T14:41:45.614803501Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T14:41:45.616241563Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T14:42:45.602951767Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T14:42:45.604721407Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:02:55.04907256Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:02:55.057843736Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:03:55.034284553Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:03:55.037268192Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:04:55.024804411Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:04:55.030778642Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:05:55.009368415Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:05:55.020137278Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:06:54.992964558Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:06:54.995796091Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:07:54.980418032Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:07:54.983231466Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:08:54.969071601Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:08:54.970877503Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:09:54.960226599Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:09:54.962257931Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:10:54.944512934Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:10:54.949661867Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:11:54.932002211Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:11:54.935152292Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:13:34.674068307Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:13:34.681171638Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:14:34.659216161Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:14:34.662174672Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:15:34.639482812Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:15:34.644710467Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:19:58.569118371Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:19:58.572962809Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:20:58.557397902Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:20:58.559722847Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:21:58.54769612Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:21:58.549767606Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:22:58.538385278Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:22:58.540918937Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:23:58.526557164Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:23:58.528453853Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:24:58.515601393Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:24:58.519719126Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:25:58.50522183Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:25:58.508300911Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:26:58.495235207Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:26:58.497627742Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:27:58.479804768Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:27:58.484146103Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:28:58.467087345Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:28:58.471066816Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:29:58.452001814Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:29:58.454027797Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:30:58.438060476Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:30:58.440056363Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:31:58.423963345Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:31:58.427291099Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:32:58.41002149Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:32:58.413819158Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-05-31T15:33:58.395667557Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-05-31T15:33:58.397284414Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:03:29.557810347Z","level":"INFO","msg":"api-core starting","service":"api-core"}
+{"time":"2026-06-01T04:03:33.979257949Z","level":"INFO","msg":"login started","email":"shinascontact@gmail.com"}
+{"time":"2026-06-01T04:03:34.074574139Z","level":"INFO","msg":"login completed successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","email":"shinascontact@gmail.com"}
+{"time":"2026-06-01T04:03:34.074940556Z","level":"INFO","msg":"login successful","email":"shinascontact@gmail.com"}
+{"time":"2026-06-01T04:03:34.15768381Z","level":"INFO","msg":"me profile fetch requested"}
+{"time":"2026-06-01T04:03:34.159082509Z","level":"INFO","msg":"get user by id started","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:03:34.161949222Z","level":"INFO","msg":"get user by id completed successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:03:34.162443339Z","level":"INFO","msg":"me profile fetched successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","email":"shinascontact@gmail.com"}
+{"time":"2026-06-01T04:04:29.575889046Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:04:29.595386211Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:05:29.571374967Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:05:29.574177517Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:06:29.567800149Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:06:29.569181522Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:07:29.563232867Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:07:29.56467686Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:08:29.559246367Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:08:29.561688217Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:11:14.372221703Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:11:14.373337621Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:12:14.368504898Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:12:14.374472037Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:12:53.02187867Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:12:53.022723814Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:12:53.045786546Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:12:53.04671897Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:12:53.670154445Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:12:53.670890173Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:12:53.672326126Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:12:53.67271607Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:12:54.519832786Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:12:54.522283343Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:12:54.525559325Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:12:54.52637276Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:12:55.473047031Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:12:55.473949194Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:12:55.475803269Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:12:55.476735747Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:12:56.846098509Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:12:56.846744011Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:12:56.84830992Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:12:56.849135658Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:12:57.837067601Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:12:57.838195535Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:12:57.841747171Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:12:57.843460624Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:13:02.747116095Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:13:02.748236436Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:13:02.750650448Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:13:02.751221197Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:13:05.22720872Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:13:05.230187984Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:13:05.238039504Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:13:05.239093996Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:13:09.534987841Z","level":"INFO","msg":"get workflow steps request received"}
+{"time":"2026-06-01T04:13:09.539784284Z","level":"INFO","msg":"getting workflow steps","workflow_id":"38317513-f9a6-4006-885e-f7269c6e59cd","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:13:09.54457675Z","level":"INFO","msg":"SSE stream started","workflow_id":"38317513-f9a6-4006-885e-f7269c6e59cd"}
+{"time":"2026-06-01T04:13:09.547289341Z","level":"INFO","msg":"client subscribed to workflow events","workflow_id":"38317513-f9a6-4006-885e-f7269c6e59cd"}
+{"time":"2026-06-01T04:13:09.548883411Z","level":"INFO","msg":"workflow steps retrieved","workflow_id":"38317513-f9a6-4006-885e-f7269c6e59cd","count":0}
+{"time":"2026-06-01T04:13:09.549683431Z","level":"INFO","msg":"get workflow steps: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","workflow_id":"38317513-f9a6-4006-885e-f7269c6e59cd"}
+{"time":"2026-06-01T04:13:09.564478758Z","level":"INFO","msg":"get workflow edges request received"}
+{"time":"2026-06-01T04:13:09.565291241Z","level":"INFO","msg":"getting workflow edges","workflow_id":"38317513-f9a6-4006-885e-f7269c6e59cd","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:13:09.572123158Z","level":"INFO","msg":"workflow edges retrieved","workflow_id":"38317513-f9a6-4006-885e-f7269c6e59cd","count":0}
+{"time":"2026-06-01T04:13:09.573016637Z","level":"INFO","msg":"get workflow edges: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","workflow_id":"38317513-f9a6-4006-885e-f7269c6e59cd","count":0}
+{"time":"2026-06-01T04:13:09.579706469Z","level":"INFO","msg":"list workflow runs request received"}
+{"time":"2026-06-01T04:13:09.580344337Z","level":"INFO","msg":"listing workflow runs","workflow_id":"38317513-f9a6-4006-885e-f7269c6e59cd","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:13:09.584382061Z","level":"INFO","msg":"workflow runs listed","workflow_id":"38317513-f9a6-4006-885e-f7269c6e59cd","count":0}
+{"time":"2026-06-01T04:13:09.584803394Z","level":"INFO","msg":"list workflow runs: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","workflow_id":"38317513-f9a6-4006-885e-f7269c6e59cd","count":0}
+{"time":"2026-06-01T04:13:10.902005692Z","level":"INFO","msg":"me profile fetch requested"}
+{"time":"2026-06-01T04:13:10.903436623Z","level":"INFO","msg":"get user by id started","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:13:10.905413051Z","level":"INFO","msg":"get user by id completed successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:13:10.906061584Z","level":"INFO","msg":"me profile fetched successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","email":"shinascontact@gmail.com"}
+{"time":"2026-06-01T04:13:10.906205007Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:13:10.908422956Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:13:10.912903422Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:13:10.913769411Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:13:11.873317474Z","level":"INFO","msg":"SSE stream started","workflow_id":"5fcf632b-0bf7-4f3e-be52-ef65b85f1d89"}
+{"time":"2026-06-01T04:13:11.874806796Z","level":"INFO","msg":"client subscribed to workflow events","workflow_id":"5fcf632b-0bf7-4f3e-be52-ef65b85f1d89"}
+{"time":"2026-06-01T04:13:11.87768782Z","level":"INFO","msg":"get workflow steps request received"}
+{"time":"2026-06-01T04:13:11.878401561Z","level":"INFO","msg":"getting workflow steps","workflow_id":"5fcf632b-0bf7-4f3e-be52-ef65b85f1d89","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:13:11.885045935Z","level":"INFO","msg":"workflow steps retrieved","workflow_id":"5fcf632b-0bf7-4f3e-be52-ef65b85f1d89","count":5}
+{"time":"2026-06-01T04:13:11.887142552Z","level":"INFO","msg":"get workflow steps: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","workflow_id":"5fcf632b-0bf7-4f3e-be52-ef65b85f1d89"}
+{"time":"2026-06-01T04:13:11.915204618Z","level":"INFO","msg":"get workflow edges request received"}
+{"time":"2026-06-01T04:13:11.915722722Z","level":"INFO","msg":"getting workflow edges","workflow_id":"5fcf632b-0bf7-4f3e-be52-ef65b85f1d89","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:13:11.917483718Z","level":"INFO","msg":"workflow edges retrieved","workflow_id":"5fcf632b-0bf7-4f3e-be52-ef65b85f1d89","count":5}
+{"time":"2026-06-01T04:13:11.917777898Z","level":"INFO","msg":"get workflow edges: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","workflow_id":"5fcf632b-0bf7-4f3e-be52-ef65b85f1d89","count":5}
+{"time":"2026-06-01T04:13:11.926261831Z","level":"INFO","msg":"list workflow runs request received"}
+{"time":"2026-06-01T04:13:11.926664636Z","level":"INFO","msg":"listing workflow runs","workflow_id":"5fcf632b-0bf7-4f3e-be52-ef65b85f1d89","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:13:11.927878723Z","level":"INFO","msg":"workflow runs listed","workflow_id":"5fcf632b-0bf7-4f3e-be52-ef65b85f1d89","count":39}
+{"time":"2026-06-01T04:13:11.9282763Z","level":"INFO","msg":"list workflow runs: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","workflow_id":"5fcf632b-0bf7-4f3e-be52-ef65b85f1d89","count":39}
+{"time":"2026-06-01T04:13:14.363876989Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:13:14.366244226Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:13:21.178203358Z","level":"INFO","msg":"me profile fetch requested"}
+{"time":"2026-06-01T04:13:21.182118498Z","level":"INFO","msg":"get user by id started","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:13:21.184688484Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:13:21.18847011Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:13:21.185797677Z","level":"INFO","msg":"get user by id completed successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:13:21.190810041Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:13:21.191492144Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:13:21.190826445Z","level":"INFO","msg":"me profile fetched successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","email":"shinascontact@gmail.com"}
+{"time":"2026-06-01T04:14:14.360749671Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:14:14.367251607Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:15:14.355982245Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:15:14.360389626Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:16:14.354041524Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:16:14.356850497Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:17:14.348670271Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:17:14.351591073Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:19:47.349209595Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:19:47.350548855Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:20:47.344386269Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:20:47.34574328Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:21:47.341249509Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:21:47.342599011Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:22:34.511369897Z","level":"INFO","msg":"login started","email":"shinascontact@gmail.com"}
+{"time":"2026-06-01T04:22:34.574026665Z","level":"INFO","msg":"login completed successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","email":"shinascontact@gmail.com"}
+{"time":"2026-06-01T04:22:34.574678097Z","level":"INFO","msg":"login successful","email":"shinascontact@gmail.com"}
+{"time":"2026-06-01T04:22:34.61144091Z","level":"INFO","msg":"me profile fetch requested"}
+{"time":"2026-06-01T04:22:34.612465951Z","level":"INFO","msg":"get user by id started","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:22:34.615976163Z","level":"INFO","msg":"get user by id completed successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:22:34.617242026Z","level":"INFO","msg":"me profile fetched successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","email":"shinascontact@gmail.com"}
+{"time":"2026-06-01T04:22:47.337254852Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:22:47.340594387Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:23:47.333793483Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:23:47.336480276Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:24:47.329775793Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:24:47.344854445Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:25:47.326211369Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:25:47.349962424Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:26:47.32141885Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:26:47.322558913Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:27:54.344399263Z","level":"INFO","msg":"api-core starting","service":"api-core"}
+{"time":"2026-06-01T04:28:25.932782837Z","level":"INFO","msg":"me profile fetch requested"}
+{"time":"2026-06-01T04:28:25.950525316Z","level":"INFO","msg":"get user by id started","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:25.99104863Z","level":"INFO","msg":"get user by id completed successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:25.992396544Z","level":"INFO","msg":"me profile fetched successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","email":"shinascontact@gmail.com"}
+{"time":"2026-06-01T04:28:29.640238326Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:29.641157884Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:29.650422637Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:29.651069046Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:30.348291586Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:30.348947075Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:30.351132616Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:30.351936721Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:31.42787637Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:31.42843987Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:31.429798451Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:31.430243726Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:32.204887596Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:32.205665838Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:32.207816513Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:32.20868505Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:33.080365606Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:33.081272049Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:33.082903926Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:33.083493506Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:33.443616948Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:33.444473718Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:33.446495094Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:33.447245852Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:33.737912467Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:33.738532698Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:33.740182118Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:33.740899234Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:35.019185612Z","level":"INFO","msg":"get usage request received"}
+{"time":"2026-06-01T04:28:35.022775984Z","level":"INFO","msg":"getting current month usage","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:35.030271911Z","level":"WARN","msg":"failed to get current month usage (may not exist)","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","error":"sql: no rows in result set"}
+{"time":"2026-06-01T04:28:35.030785058Z","level":"WARN","msg":"get usage: no usage data found or error, returning defaults","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","error":"sql: no rows in result set"}
+{"time":"2026-06-01T04:28:35.698045911Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:35.705474346Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:35.718619833Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:35.723807413Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:36.146074891Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:36.146775965Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:36.148943595Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:36.14950171Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:37.487879392Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:37.489180426Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:37.491943825Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:37.492816546Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:38.379419114Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:38.380711821Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:38.382918686Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:38.383315054Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:39.407534448Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:39.408189346Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:39.409700043Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:39.410677102Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:44.712008081Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:44.713359186Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:44.714919217Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:44.715440564Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:46.931921945Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:46.932698774Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:46.934603343Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:46.93516122Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:51.865920137Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:51.866804029Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:51.868952166Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:51.869660071Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:54.274676153Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:54.275625519Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:54.277910004Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:54.279314087Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:54.347335226Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:28:54.353031108Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:28:55.061182522Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:55.061905227Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:55.064096452Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:55.064791971Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:55.878387438Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:28:55.879135256Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:28:55.880742665Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:28:55.881141894Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:29:21.716054296Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:29:21.716598673Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:29:21.718547722Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:29:21.719066488Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:29:22.414167706Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:29:22.415210726Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:29:22.417822953Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:29:22.419129899Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:29:22.841009898Z","level":"INFO","msg":"get usage request received"}
+{"time":"2026-06-01T04:29:22.841994841Z","level":"INFO","msg":"getting current month usage","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:29:22.845369515Z","level":"WARN","msg":"failed to get current month usage (may not exist)","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","error":"sql: no rows in result set"}
+{"time":"2026-06-01T04:29:22.846021775Z","level":"WARN","msg":"get usage: no usage data found or error, returning defaults","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","error":"sql: no rows in result set"}
+{"time":"2026-06-01T04:29:25.222628242Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:29:25.223746636Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:29:25.226734765Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:29:25.227869211Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:29:54.34341116Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:29:54.344829039Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:30:54.338558645Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:30:54.345186493Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:31:54.334990292Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:31:54.498316102Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:32:54.32874929Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:32:54.333399853Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:33:54.321490842Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:33:54.3233927Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:34:54.316439803Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:34:54.317802931Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:35:54.309334724Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:35:54.32095717Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:36:54.301294097Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:36:54.303027446Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:37:54.295307063Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:37:54.300386507Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:38:54.288322745Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:38:54.325740439Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:39:54.282356463Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:39:54.390055789Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:40:54.27571691Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:40:54.278753277Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:41:54.269387858Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:41:54.270363131Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:43:06.291754244Z","level":"INFO","msg":"api-core starting","service":"api-core"}
+{"time":"2026-06-01T04:44:06.287939597Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:44:06.330811872Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:45:06.288813747Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:45:06.297370358Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:45:14.919385384Z","level":"INFO","msg":"login started","email":"shinascontact@gmai.com"}
+{"time":"2026-06-01T04:45:14.926737115Z","level":"WARN","msg":"login failed: user not found","email":"shinascontact@gmai.com"}
+{"time":"2026-06-01T04:45:14.92710461Z","level":"WARN","msg":"login failed","email":"shinascontact@gmai.com","error":"invalid credentials"}
+{"time":"2026-06-01T04:45:28.110677752Z","level":"INFO","msg":"login started","email":"shinascontact@gmail.com"}
+{"time":"2026-06-01T04:45:28.188216892Z","level":"INFO","msg":"login completed successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","email":"shinascontact@gmail.com"}
+{"time":"2026-06-01T04:45:28.188566134Z","level":"INFO","msg":"login successful","email":"shinascontact@gmail.com"}
+{"time":"2026-06-01T04:45:28.301047621Z","level":"INFO","msg":"me profile fetch requested"}
+{"time":"2026-06-01T04:45:28.304380983Z","level":"INFO","msg":"get user by id started","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:45:28.310495415Z","level":"INFO","msg":"get user by id completed successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:45:28.315303195Z","level":"INFO","msg":"me profile fetched successfully","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","email":"shinascontact@gmail.com"}
+{"time":"2026-06-01T04:45:29.756763306Z","level":"INFO","msg":"get usage request received"}
+{"time":"2026-06-01T04:45:29.757179263Z","level":"INFO","msg":"getting current month usage","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:45:29.761726925Z","level":"WARN","msg":"failed to get current month usage (may not exist)","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","error":"sql: no rows in result set"}
+{"time":"2026-06-01T04:45:29.7623134Z","level":"WARN","msg":"get usage: no usage data found or error, returning defaults","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","error":"sql: no rows in result set"}
+{"time":"2026-06-01T04:46:06.280528297Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:46:06.285348995Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:47:06.27460167Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:47:06.283345256Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:48:06.260126462Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:48:06.272838377Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:49:06.263979276Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:49:06.272549844Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:50:06.259581216Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:50:06.268955133Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:51:06.254250304Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:51:06.413951097Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:52:06.249228691Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:52:06.257632704Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:53:06.243260737Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:53:06.245112698Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:54:06.238362678Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:54:06.255342756Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:55:06.232228995Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:55:06.234841998Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:55:33.13400855Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:55:33.136321918Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:55:33.143325352Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:55:33.144904073Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:55:35.041707666Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:55:35.04229204Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:55:35.044103393Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:55:35.044938857Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:55:37.957944061Z","level":"INFO","msg":"list workflows request received"}
+{"time":"2026-06-01T04:55:37.959591519Z","level":"INFO","msg":"listing workflows","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648"}
+{"time":"2026-06-01T04:55:37.963036629Z","level":"INFO","msg":"workflows listed","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:55:37.96340399Z","level":"INFO","msg":"list workflows: success","user_id":"9af6d792-0ba6-4907-87a8-f7b5b1313648","count":3}
+{"time":"2026-06-01T04:56:06.227739592Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:56:06.240823769Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:57:06.223941053Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:57:06.225986262Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:58:06.219980987Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:58:06.223617156Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T04:59:06.21351452Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T04:59:06.216763228Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:00:06.19662313Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:00:06.297306459Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:01:06.208697765Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:01:06.215823961Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:02:06.207180786Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:02:06.213097406Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:03:06.203642685Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:03:06.208134531Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:04:06.201856424Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:04:06.204482141Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:05:06.197026128Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:05:06.217008363Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:06:06.193098051Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:06:06.198444408Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:07:06.188569394Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:07:06.197767675Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:08:06.183684922Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:08:06.185691146Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:09:06.179355993Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:09:06.183741595Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:10:06.176272386Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:10:06.177951834Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:11:06.170689765Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:11:06.204373844Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:12:06.167051412Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:12:06.170152176Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:13:06.162634476Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:13:06.16499468Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:14:06.159495884Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:14:06.199887568Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:15:06.155324814Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:15:06.157819717Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:16:06.150738759Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:16:06.153391108Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:17:06.146075178Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:17:06.148411331Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:18:06.125604074Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:18:06.127838604Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:19:06.135896129Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:19:06.138625719Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:20:06.133301055Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:20:06.134754058Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:21:06.128451923Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:21:06.130261952Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:22:06.125250176Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:22:06.130467878Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:23:06.123165666Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:23:06.127374902Z","level":"INFO","msg":"due scheduled workflows listed","count":0}
+{"time":"2026-06-01T05:24:06.12029999Z","level":"INFO","msg":"listing due scheduled workflows"}
+{"time":"2026-06-01T05:24:06.123389612Z","level":"INFO","msg":"due scheduled workflows listed","count":0}

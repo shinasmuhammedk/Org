@@ -19,7 +19,7 @@ func Init() {
 	password := os.Getenv("DB_PASSWORD")
 	name := os.Getenv("DB_NAME")
 	connStr := fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		"postgres://%s:%s@%s:%s/%s?sslmode=require",
 		user,
 		password,
 		host,
