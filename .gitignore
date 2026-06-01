@@ -1,2 +1,6 @@
 .env services/api-core/.env 
 services/api-core/.env 
+
+# Application logs
+logs/
+*.log

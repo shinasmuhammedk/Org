@@ -1,3 +1,0 @@
-{"time":"2026-05-27T04:37:22.186696641Z","level":"ERROR","msg":"webhook trigger not found","webhook_id":"f9197641-e58a-42d0-8a00-3a529e964818","error":"sql: no rows in result set"}
-{"time":"2026-05-27T04:37:22.191620612Z","level":"ERROR","msg":"webhook trigger: execution failed","webhook_id":"f9197641-e58a-42d0-8a00-3a529e964818","error":"sql: no rows in result set"}
-{"time":"2026-05-30T12:33:02.73447764Z","level":"ERROR","msg":"workflow run failed","workflow_id":"fbe2c588-83d8-4c30-a742-bc0d9df062ff","run_id":"e6140c66-ce24-4fbc-bbb4-63e9829b725c","error":"http request url is required"}
