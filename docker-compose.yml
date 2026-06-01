@@ -21,19 +21,11 @@ services:
     image: org-billing-service
     container_name: org-billing-service
     restart: unless-stopped
-    depends_on:
-      - postgres
     ports:
       - "50052:50052"
       - "8081:8081"
     env_file:
       - ../org-billing-service/.env
-    environment:
-      DB_HOST: org-postgres
-      DB_PORT: 5432
-      DB_USER: postgres
-      DB_PASSWORD: Shinas
-      DB_NAME: billing_db
 
   api-core:
     build:

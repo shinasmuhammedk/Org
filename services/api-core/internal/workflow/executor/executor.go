@@ -79,6 +79,9 @@ func (e *Executor) executeStepOnce(step db.WorkflowStep, input []byte) ([]byte, 
 
 	case "email":
 		return e.executeEmail(step.Config, input)
+        
+    case "ai":
+        return e.executeAI(step.Config, input)
 
 	default:
 		return nil, errors.New(
