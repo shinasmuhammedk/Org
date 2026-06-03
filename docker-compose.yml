@@ -30,7 +30,7 @@ services:
   api-core:
     build:
       context: ./services/api-core
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     image: org-api-core
     container_name: org-api-core
     depends_on: 
@@ -38,8 +38,6 @@ services:
       - billing-service
     ports:
       - "8080:8080"
-    volumes:
-      - ./services/api-core:/app
     env_file:
       - ./services/api-core/.env
     environment:
