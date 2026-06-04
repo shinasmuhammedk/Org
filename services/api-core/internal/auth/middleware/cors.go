@@ -10,11 +10,14 @@ func CORSMiddleware() gin.HandlerFunc {
 		AllowOrigins: []string{
 			"http://localhost:5173",
 			"http://localhost:5175",
+			"https://org-frontend-rho.vercel.app",
+			"https://shinasorg.duckdns.org",
 		},
 		AllowMethods: []string{
 			"GET",
 			"POST",
 			"PUT",
+			"PATCH",
 			"DELETE",
 			"OPTIONS",
 		},

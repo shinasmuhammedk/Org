@@ -8,7 +8,7 @@ import (
 	authEmail "org/api-core/internal/auth/email"
 	"org/api-core/internal/auth/repository"
 	"org/api-core/internal/auth/security"
-	"org/api-core/internal/auth/tokenstore"
+	"org/api-core/internal/auth/tokenStore"
 	"org/api-core/internal/db"
 	"strings"
 	"time"

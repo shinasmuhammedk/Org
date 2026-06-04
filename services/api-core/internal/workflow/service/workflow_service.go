@@ -776,6 +776,9 @@ func (s *WorkflowService) ExecuteWorkflowRun(
 		})
 
 		output, err := exec.ExecuteStep(step, nodeInputs[stepID])
+		fmt.Println("STEP TYPE:", step.StepType)
+		fmt.Println("STEP INPUT:", string(nodeInputs[stepID]))
+		fmt.Println("STEP OUTPUT:", string(output))
 		if err != nil {
 			s.Publish(workflowID.String(), map[string]any{
 				"type":      "step_status",
