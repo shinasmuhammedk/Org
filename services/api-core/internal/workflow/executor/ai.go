@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"time"
@@ -90,14 +91,27 @@ func (e *Executor) executeAI(config []byte, input []byte) ([]byte, error) {
 	}
 	defer res.Body.Close()
 
+	responseBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode < 200 || res.StatusCode >= 300 {
+		return nil, fmt.Errorf("gemini API error: status=%d body=%s", res.StatusCode, string(responseBytes))
+	}
+
 	var response GeminiResponse
 
-	if err := json.NewDecoder(res.Body).Decode(&response); err != nil {
+	if err := json.Unmarshal(responseBytes, &response); err != nil {
 		return nil, err
 	}
 
 	if len(response.Candidates) == 0 {
-		return nil, errors.New("no response from gemini")
+		return nil, fmt.Errorf("no response from gemini: body=%s", string(responseBytes))
+	}
+
+	if len(response.Candidates[0].Content.Parts) == 0 {
+		return nil, fmt.Errorf("gemini returned no parts: body=%s", string(responseBytes))
 	}
 
 	text := response.Candidates[0].Content.Parts[0].Text
