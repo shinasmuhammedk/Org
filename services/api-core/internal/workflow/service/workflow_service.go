@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"os"
 	"sync"
 	"time"
 
@@ -325,7 +326,11 @@ func (s *WorkflowService) SaveWorkflowSteps(
 			}
 
 			configMap["webhook_url_id"] = webhookURLID
-			configMap["webhook_url"] = "http://localhost:8080/webhooks/" + webhookURLID
+            apiBaseURL := os.Getenv("API_BASE_URL")
+            if apiBaseURL == ""{
+                apiBaseURL = "http://localhost:8080"
+            }
+			configMap["webhook_url"] = apiBaseURL + "/webhooks/" + webhookURLID
 
 			updatedConfig, err := json.Marshal(configMap)
 			if err != nil {
