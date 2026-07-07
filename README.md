@@ -58,6 +58,30 @@ Deployed via Docker on an AWS EC2 instance, served behind Nginx.
 
 ---
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Key Highlights](#key-highlights)
+- [Live Demo](#live-demo)
+- [Screenshots](#-dashboard)
+- [Features](#features)
+- [System Architecture](#system-architecture)
+- [Workflow Execution Engine](#workflow-execution-engine)
+- [Repository Structure](#repository-structure)
+- [Technology Stack](#technology-stack)
+- [Database Design](#database-design)
+- [API Overview](#api-overview)
+- [Getting Started](#getting-started)
+- [Deployment](#deployment)
+- [Scalability & Performance](#scalability--performance)
+- [Security](#security)
+- [Engineering Challenges & Learnings](#engineering-challenges--learnings)
+- [Roadmap](#roadmap)
+- [License](#license)
+- [Contributing](#contributing)
+- [Contact](#contact)
+
+---
 
 ## 📸 Dashboard
 
@@ -105,9 +129,9 @@ Manage account settings and connected services.
   <img src="docs/images/login.png" alt="Login" width="900">
 </p>
 
-Secure authentication using JWT and Google OAuth.`
+Secure authentication using JWT and Google OAuth.
 
-
+---
 
 ## Features
 
@@ -202,6 +226,7 @@ The node system is designed to be extensible, allowing additional trigger and ac
 - **Nginx Reverse Proxy** — Routes and terminates incoming traffic to backend services.
 - **AWS Deployment** — Runs on AWS EC2 as the target production environment.
 
+---
 
 ## System Architecture
 
@@ -281,6 +306,8 @@ flowchart TD
 
     Redis -->|Async Jobs| Engine
 ```
+
+---
 
 ## Workflow Execution Engine
 
@@ -390,7 +417,7 @@ sequenceDiagram
 - **Loose Coupling** — Services communicate through well-defined boundaries (queue, gRPC, shared context) rather than direct dependencies, allowing components to evolve independently.
 - **Reliability** — Retry policies, explicit state tracking, and durable persistence ensure that transient failures do not silently corrupt workflow outcomes.
 
-
+---
 
 ## Repository Structure
 
@@ -481,6 +508,7 @@ The organization of ORG's repositories follows the same principles applied to it
 - **Maintainability** — smaller, focused repositories reduce the cognitive overhead of working on any single part of the system.
 - **Production-oriented design** — the repository structure supports independent CI/CD pipelines and deployment processes for each service.
 
+---
 
 ## Technology Stack
 
@@ -507,7 +535,7 @@ The organization of ORG's repositories follows the same principles applied to it
 | Development | Git | Version control across all repositories. | Standard tool for tracking changes and coordinating work across the polyrepo structure. |
 | Development | GitHub | Hosting for source repositories and CI integration. | Central location for the three service repositories, with support for issue tracking and pull-request based review. |
 
-## Design Philosophy
+### Design Philosophy
 
 The stack is organized around a clear separation between synchronous, user-facing interaction and asynchronous, internal execution. REST and Gin handle the request/response needs of the frontend, while gRPC and Redis carry the higher-frequency, internal traffic between services — execution requests, scheduler dispatches, and billing calls. This split keeps the user-facing API responsive regardless of load on the execution engine, and allows the engine itself to scale independently as workflow volume grows.
 
@@ -515,6 +543,52 @@ Go was chosen specifically for the execution engine because the workflow model i
 
 Maintainability and developer experience are addressed primarily through boundaries rather than tooling: each service owns its data access and business logic, communicates through typed gRPC contracts, and can be modified without requiring changes to unrelated services. On the frontend, Vite and Tailwind reduce the operational overhead of the build and styling pipeline, keeping iteration fast without introducing additional abstraction layers. Reliability is reinforced by the infrastructure choices — Docker guarantees environment parity between development and production, and Nginx provides a stable routing layer in front of services that may be restarted or redeployed independently.
 
+---
+
+## Database Design
+
+ORG's data model is centered around a small set of core entities that mirror the platform's execution semantics: a workflow is a graph of nodes and edges, and every run of that graph produces a durable execution record. PostgreSQL serves as the system of record for all of these entities, with relational constraints enforcing the structural rules that the Execution Engine depends on at runtime.
+
+### Core Entities
+
+**Users**
+Stores user accounts, including authentication credentials (or OAuth identity references) and the association to a subscription record. Every workflow, execution, and schedule in the system is ultimately scoped to a user.
+
+**Workflows**
+Represents a single automation definition — its metadata, ownership, deployment status (draft or published), and trigger configuration (webhook or cron). A workflow is the top-level container for its nodes and edges, and the entity referenced when an execution is requested.
+
+**Nodes**
+Represents an individual step within a workflow: its type (trigger, HTTP, AI, delay, condition, email), its configuration payload, and its position on the visual canvas. Nodes belong to exactly one workflow and form the vertices of its execution graph.
+
+**Edges**
+Represents a directed connection between two nodes within the same workflow, defining the source and destination of data and control flow. Edges are what allow the Execution Engine to construct the DAG for a given workflow at run time.
+
+**Workflow Executions**
+Represents a single run of a workflow: its start time, end time, overall status, and total duration. Each row is a durable record of one execution attempt, independent of whether that run succeeded or failed.
+
+**Node Executions**
+Represents the execution of a single node within a specific workflow execution: its input, output, error message (if any), status, and duration. This is the finest-grained execution record in the system and is what powers per-node log inspection.
+
+**Schedules**
+Represents a cron-based trigger configuration for a workflow: the cron expression, the computed next execution time, and whether the schedule is currently active. The Scheduler service reads this entity to determine when to dispatch a new execution.
+
+**Subscriptions**
+Stores Stripe subscription metadata for a user, including the current plan and billing status. This entity is the source of truth the API Service consults when enforcing plan-based limits.
+
+### Relationships
+
+```
+User
+ └── Workflows
+       ├── Nodes
+       ├── Edges
+       ├── Schedules
+       └── Workflow Executions
+             └── Node Executions
+
+User
+ └── Subscription
+```
 
 - A **User** owns zero or more **Workflows** and has exactly one **Subscription**.
 - A **Workflow** owns its **Nodes** and **Edges**, which together define its execution graph.
@@ -595,7 +669,7 @@ erDiagram
     }
 ```
 
-## Database Design Principles
+### Database Design Principles
 
 The schema is normalized around clear ownership boundaries: workflows own their nodes, edges, and schedules, while executions own their node-level execution records. This keeps each entity's write path narrow and avoids duplicating configuration data across rows. Foreign key constraints between these entities enforce referential integrity at the database level — an edge cannot reference a node that does not belong to the same workflow, and a node execution cannot exist without a parent workflow execution — which removes an entire class of consistency checks that would otherwise need to be implemented in application code.
 
@@ -603,7 +677,31 @@ Separating **Workflows**, **Nodes**, and **Edges** into distinct tables, rather 
 
 The distinction between **Workflow Executions** and **Node Executions** exists specifically to support auditability and post-hoc debugging: every run is retained as a durable record independent of the live execution context held in memory by the engine, and every node within that run has its own input, output, and error captured at the same granularity. This design also supports scalability, since execution history grows append-only over time and can be partitioned or archived independently of the workflow definitions themselves. Finally, keeping **Subscriptions** as a separate entity from **Users** isolates billing state changes — driven by Stripe webhooks — from the user record itself, so that subscription updates do not require touching authentication-related data.
 
+---
 
+## API Overview
+
+The API layer is the single entry point for all client interaction with ORG. It is exposed by the API Service and organized into functional groups, each responsible for a distinct area of the platform. Internally, the API Service delegates work to other backend services over gRPC, while the frontend interacts with it exclusively through REST and SSE.
+
+### API Groups
+
+| API Group | Description | Authentication Required |
+|---|---|---|
+| **Authentication API** | Handles account registration, login, Google OAuth, JWT refresh, and user profile retrieval. | Mixed |
+| **Workflow API** | Manages the lifecycle of a workflow, including creation, updates, deletion, publishing, deployment, and retrieval. | Yes |
+| **Node API** | Manages individual nodes within a workflow, including creation, updates, deletion, configuration, and data retrieval. | Yes |
+| **Execution API** | Triggers manual workflow runs and exposes execution status, execution history, and node-level execution logs. | Yes |
+| **Webhook API** | Receives inbound webhook requests and triggers the corresponding workflow via a generated public endpoint. | No (secured through unique webhook URLs) |
+| **Scheduler API** | Manages cron-based schedules, including creation, updates, deletion, enable/disable toggling, and upcoming execution lookups. | Yes |
+| **Billing API** | Handles Stripe Checkout initiation, subscription status, customer portal access, and billing history. | Yes |
+
+### Communication Model
+
+Requests originate at the frontend and travel through a single path before reaching backend services:
+
+```
+Frontend → REST API → Core Backend → gRPC → Billing Service
+```
 
 - **REST** is used exclusively for communication between the frontend and the API Service. It is the only protocol the frontend speaks, regardless of which internal service ultimately fulfills the request.
 - **gRPC** is used for internal, service-to-service communication. When the API Service needs to perform an operation owned by another service — such as billing — it issues a gRPC call rather than exposing that service directly to the frontend.
@@ -638,6 +736,7 @@ flowchart LR
     Core -.->|SSE: execution logs & status| Frontend
 ```
 
+---
 
 ## Getting Started
 
@@ -746,6 +845,7 @@ To confirm the local setup is working correctly:
 - A workflow with a webhook trigger successfully registers its endpoint.
 - Triggering a workflow produces live execution logs that stream to the frontend without requiring a page refresh.
 
+---
 
 ## Deployment
 
@@ -837,7 +937,31 @@ Each service is configured through environment variables supplied at container s
 - **Redis Persistence** — Redis is configured with persistence appropriate to its role as a queue and short-lived state store, balancing durability against the transient nature of most of the data it holds.
 - **Scalability** — While the current deployment runs all services on a single EC2 instance, the containerized, service-oriented design allows individual services — particularly the backend and Billing Service — to be moved to separate hosts or scaled horizontally as load increases, without changes to how services communicate with one another.
 
+---
 
+## Scalability & Performance
+
+ORG's architecture reflects a set of deliberate design choices aimed at long-term maintainability and future scalability, rather than optimization for a specific load target. The system favors separation of concerns, stateless services, modular boundaries, and loose coupling between components — decisions that make it possible to reason about, modify, and eventually scale individual parts of the platform independently of the whole.
+
+### Microservices Architecture
+
+ORG separates its responsibilities into dedicated services rather than a single monolithic application. The Core Backend owns workflow management, execution, and scheduling, while the Billing Service owns subscription and payment logic. This separation allows each service to be developed, tested, and deployed independently, without changes in one service requiring coordinated changes in the other. It also provides fault isolation — an issue in the Billing Service does not directly compromise workflow execution — and establishes clear ownership boundaries that keep each codebase focused and easier to maintain over time.
+
+### Stateless Backend Design
+
+Authentication in ORG is handled through JWTs, meaning the backend does not need to retain user session state in memory. All durable data — users, workflows, executions, and schedules — is persisted in PostgreSQL, while Redis holds only temporary execution state and coordination data. Because no service instance holds session or workflow state that another instance couldn't access from shared storage, backend services can be restarted, redeployed, or run as multiple instances without loss of continuity for in-flight requests. This statelessness simplifies both routine deployment and any future move toward running multiple backend instances.
+
+### Asynchronous Workflow Execution
+
+Triggering a workflow does not hold the initiating HTTP request open for the duration of execution. Instead, the request lifecycle and the execution lifecycle are decoupled:
+
+```
+Client Request
+      ↓
+   Backend
+      ↓
+Workflow Execution
+```
 
 The backend accepts the trigger, enqueues the execution, and returns a response without waiting for the workflow to complete. Execution then proceeds independently, with status and logs made available as the run progresses. This keeps the API responsive regardless of how long a given workflow takes to run, and ensures that a slow or long-running workflow does not block the request-handling path for unrelated users.
 
@@ -912,6 +1036,7 @@ flowchart TD
     Backend -->|gRPC| Billing
 ```
 
+---
 
 ## Security
 
@@ -955,6 +1080,7 @@ ORG's security model is guided by the following principles:
 - **Defense in depth** — Security is enforced at multiple layers — middleware, service boundaries, and infrastructure — so that no single control is solely responsible for protecting the system.
 - **Secure credential management** — Secrets are provided through environment configuration and never committed to source control, keeping sensitive values out of the codebase entirely.
 
+---
 
 ## Engineering Challenges & Learnings
 
@@ -1007,6 +1133,7 @@ Building ORG reinforced a number of lessons that extend beyond any single techno
 - Working through deployment and production issues directly improved debugging skills in ways that local development alone does not.
 - Clear documentation and deliberate context management are not incidental to engineering work — they directly affect how efficiently and correctly a system can be built, especially under real constraints.
 
+---
 
 ## Roadmap
 
@@ -1081,4 +1208,25 @@ The following are long-term architectural and product goals rather than near-ter
 
 These items depend on architectural work — particularly around multi-tenancy and distributed execution — that has not yet begun, and are included here to communicate direction rather than current or imminent scope.
 
+---
 
+## License
+
+ORG is released under the [MIT License](LICENSE). You are free to use, modify, and distribute this software in accordance with the terms of that license.
+
+---
+
+## Contributing
+
+ORG is currently developed and maintained as a solo project. Issues and feature suggestions are welcome via the issue tracker on each repository (`OrgFrontend`, `Org`, `org-billing-service`). If you'd like to propose a change, please open an issue first to discuss scope before submitting a pull request, since each repository maps to a distinct service boundary and changes should respect those boundaries.
+
+---
+
+## Contact
+
+Built and maintained by **Shinas**.
+
+- Live Demo: [shinasorg.duckdns.org](https://shinasorg.duckdns.org)
+- Issues & Feedback: open an issue on the relevant GitHub repository
+
+If you're evaluating ORG for architectural reference, system design review, or collaboration, feel free to reach out through the repository's issue tracker.
