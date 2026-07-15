@@ -2,6 +2,7 @@ package executor
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,11 +10,21 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type aiConfig struct {
 	Prompt string `json:"prompt"`
 	Model  string `json:"model"`
+}
+
+type GeminiService interface {
+	GetUserAPIKey(ctx context.Context, userID uuid.UUID) (string, error)
+}
+
+type Executor struct {
+	geminiService GeminiService
 }
 
 type GeminiResponse struct {
@@ -26,7 +37,12 @@ type GeminiResponse struct {
 	} `json:"candidates"`
 }
 
-func (e *Executor) executeAI(config []byte, input []byte) ([]byte, error) {
+func (e *Executor) executeAI(
+    ctx context.Context,
+    userID uuid.UUID,
+    config []byte,
+    input []byte,
+) ([]byte, error) {
 
 	var cfg aiConfig
 
@@ -45,9 +61,13 @@ func (e *Executor) executeAI(config []byte, input []byte) ([]byte, error) {
 		model = "gemini-2.5-flash"
 	}
 
-	apiKey := os.Getenv("GEMINI_API_KEY")
+	apiKey, err := e.geminiService.GetUserAPIKey(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve user's Gemini API key: %w", err)
+	}
+
 	if apiKey == "" {
-		return nil, errors.New("GEMINI_API_KEY not configured")
+		return nil, errors.New("user has not configured a Gemini API key")
 	}
 
 	reqBody := map[string]interface{}{

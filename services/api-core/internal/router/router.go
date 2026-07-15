@@ -1,7 +1,7 @@
+
 package router
 
 import (
-	"context"
 	"log/slog"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +12,6 @@ import (
 	authRepository "org/api-core/internal/auth/repository"
 	authServicePkg "org/api-core/internal/auth/service"
 	tokenstore "org/api-core/internal/auth/tokenstore"
-	"org/api-core/internal/worker"
 
 	"org/api-core/internal/db"
 
@@ -21,10 +20,17 @@ import (
 	oauthServicePkg "org/api-core/internal/oauth/service"
 
 	billingHandler "org/api-core/internal/billing"
+
+	geminiHandlerPkg "org/api-core/internal/gemini/handler"
+	geminiRepository "org/api-core/internal/gemini/repository"
+	geminiServicePkg "org/api-core/internal/gemini/service"
+
 	"org/api-core/internal/queue"
+
 	usageHandlerPkg "org/api-core/internal/usage/handler"
 	usageRepository "org/api-core/internal/usage/repository"
 	usageServicePkg "org/api-core/internal/usage/service"
+
 	workflowHandlerPkg "org/api-core/internal/workflow/handler"
 	workflowRepository "org/api-core/internal/workflow/repository"
 	workflowServicePkg "org/api-core/internal/workflow/service"
@@ -33,10 +39,20 @@ import (
 func RegisterRoutes(r *gin.Engine, appLogger *slog.Logger) {
 	r.Use(middleware.CORSMiddleware())
 
-	authRoutes(r,appLogger)
-	oauthRoutes(r,appLogger)
-	workflowRoutes(r, appLogger)
-	billingRoutes(r,appLogger)
+	// Shared Gemini dependencies
+	geminiRepo := geminiRepository.NewSQLCGeminiRepository(
+		db.QueriesInstance,
+	)
+
+	geminiService := geminiServicePkg.NewGeminiService(
+		geminiRepo,
+	)
+
+	authRoutes(r, appLogger)
+	oauthRoutes(r, appLogger)
+	workflowRoutes(r, appLogger, geminiService)
+	billingRoutes(r, appLogger)
+	geminiRoutes(r, appLogger, geminiService)
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -47,9 +63,21 @@ func RegisterRoutes(r *gin.Engine, appLogger *slog.Logger) {
 
 func authRoutes(r *gin.Engine, appLogger *slog.Logger) {
 	userRepo := authRepository.NewSQLCUserRepository(db.QueriesInstance)
-	authService := authServicePkg.NewAuthService(userRepo,appLogger)
-	authHandler := authHandlerPkg.NewAuthHandler(authService,appLogger)
-	googleAuthHandler := authHandlerPkg.NewGoogleAuthHandler(authService,appLogger)
+
+	authService := authServicePkg.NewAuthService(
+		userRepo,
+		appLogger,
+	)
+
+	authHandler := authHandlerPkg.NewAuthHandler(
+		authService,
+		appLogger,
+	)
+
+	googleAuthHandler := authHandlerPkg.NewGoogleAuthHandler(
+		authService,
+		appLogger,
+	)
 
 	r.POST("/signup", authHandler.Signup)
 	r.POST("/login", authHandler.Login)
@@ -60,58 +88,79 @@ func authRoutes(r *gin.Engine, appLogger *slog.Logger) {
 	r.POST("/refresh", authHandler.RefreshToken)
 	r.POST("/logout", authHandler.Logout)
 
-	// r.GET("/auth/google/start", googleAuthHandler.GoogleAuthStart)
-    r.GET("/auth/google/login", googleAuthHandler.GoogleAuthStart)
+	r.GET("/auth/google/login", googleAuthHandler.GoogleAuthStart)
 	r.GET("/auth/google/callback", googleAuthHandler.GoogleAuthCallback)
 
 	r.GET("/test-billing", handler.TestBilling)
 }
 
 func oauthRoutes(r *gin.Engine, appLogger *slog.Logger) {
-	oauthRepo := oauthRepository.NewSQLCConnectedAccountRepository(db.QueriesInstance)
-	oauthService := oauthServicePkg.NewOAuthService(oauthRepo,appLogger)
-	oauthHandler := oauthHandlerPkg.NewOAuthHandler(oauthService,appLogger)
+	oauthRepo := oauthRepository.NewSQLCConnectedAccountRepository(
+		db.QueriesInstance,
+	)
 
-	r.GET("/oauth/google/start", middleware.AuthMiddleware(), oauthHandler.GoogleStart)
-	// r.GET("/oauth/google/callback", oauthHandler.GoogleCallback)
+	oauthService := oauthServicePkg.NewOAuthService(
+		oauthRepo,
+		appLogger,
+	)
+
+	oauthHandler := oauthHandlerPkg.NewOAuthHandler(
+		oauthService,
+		appLogger,
+	)
+
+	r.GET(
+		"/oauth/google/start",
+		middleware.AuthMiddleware(),
+		oauthHandler.GoogleStart,
+	)
 }
 
-func workflowRoutes(r *gin.Engine, appLogger *slog.Logger) {
-	workflowRepo := workflowRepository.NewSQLCWorkflowRepository(db.QueriesInstance)
+func workflowRoutes(
+	r *gin.Engine,
+	appLogger *slog.Logger,
+	geminiService geminiServicePkg.GeminiService,
+) {
+	workflowRepo := workflowRepository.NewSQLCWorkflowRepository(
+		db.QueriesInstance,
+	)
 
-	workflowQueue := queue.NewRedisQueue(tokenstore.RDB)
+	workflowQueue := queue.NewRedisQueue(
+		tokenstore.RDB,
+	)
 
 	workflowService := workflowServicePkg.NewWorkflowService(
 		workflowRepo,
 		workflowQueue,
-        appLogger,
+		geminiService,
+		appLogger,
 	)
 
-	workflowWorker := worker.NewWorkflowWorker(
-		workflowQueue,
-		workflowService,
+	usageRepo := usageRepository.NewPostgresRepository(
+		db.QueriesInstance,
 	)
 
-	go workflowWorker.Start(context.Background())
-
-	usageRepo := usageRepository.NewPostgresRepository(db.QueriesInstance)
-	usageService := usageServicePkg.NewService(usageRepo,appLogger)
+	usageService := usageServicePkg.NewService(
+		usageRepo,
+		appLogger,
+	)
 
 	workflowHandler := workflowHandlerPkg.NewWorkflowHandler(
 		workflowService,
 		usageService,
-        appLogger,
+		appLogger,
 	)
 
 	r.POST("/webhooks/:webhookID", workflowHandler.HandleWebhookTrigger)
 	r.GET("/workflows/:id/events", workflowHandler.StreamWorkflowEvents)
 
-	auth := r.Group("/", middleware.AuthMiddleware())
+	auth := r.Group("/")
+	auth.Use(middleware.AuthMiddleware())
 
 	auth.POST("/workflows", workflowHandler.CreateWorkflow)
 	auth.GET("/workflows", workflowHandler.ListWorkflows)
 	auth.DELETE("/workflows/:id", workflowHandler.DeleteWorkflow)
-    auth.PUT("/workflows/:id", workflowHandler.UpdateWorkflow)
+	auth.PUT("/workflows/:id", workflowHandler.UpdateWorkflow)
 
 	auth.POST("/workflows/:id/steps", workflowHandler.CreateStep)
 
@@ -129,9 +178,19 @@ func workflowRoutes(r *gin.Engine, appLogger *slog.Logger) {
 }
 
 func billingRoutes(r *gin.Engine, appLogger *slog.Logger) {
-	usageRepo := usageRepository.NewPostgresRepository(db.QueriesInstance)
-	usageService := usageServicePkg.NewService(usageRepo,appLogger)
-	usageHandler := usageHandlerPkg.NewUsageHandler(usageService,appLogger)
+	usageRepo := usageRepository.NewPostgresRepository(
+		db.QueriesInstance,
+	)
+
+	usageService := usageServicePkg.NewService(
+		usageRepo,
+		appLogger,
+	)
+
+	usageHandler := usageHandlerPkg.NewUsageHandler(
+		usageService,
+		appLogger,
+	)
 
 	billing := r.Group("/billing")
 	billing.Use(middleware.AuthMiddleware())
@@ -140,4 +199,22 @@ func billingRoutes(r *gin.Engine, appLogger *slog.Logger) {
 	billing.GET("/subscription", billingHandler.GetSubscription)
 	billing.GET("/usage", usageHandler.GetUsage)
 	billing.POST("/portal", billingHandler.CreatePortalSession)
+}
+
+func geminiRoutes(
+	r *gin.Engine,
+	appLogger *slog.Logger,
+	geminiService geminiServicePkg.GeminiService,
+) {
+	geminiHandler := geminiHandlerPkg.NewGeminiHandler(
+		geminiService,
+	)
+
+	auth := r.Group("/gemini")
+	auth.Use(middleware.AuthMiddleware())
+
+	auth.POST("/key", geminiHandler.SaveKey)
+	auth.GET("/key", geminiHandler.GetKey)
+	auth.PUT("/key", geminiHandler.UpdateKey)
+	auth.DELETE("/key", geminiHandler.DeleteKey)
 }

@@ -1,17 +1,21 @@
 package executor
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"time"
 
 	"org/api-core/internal/db"
+
+	"github.com/google/uuid"
 )
 
-type Executor struct{}
 
-func NewExecutor() *Executor {
-	return &Executor{}
+func NewExecutor(geminiService GeminiService) *Executor {
+	return &Executor{
+        geminiService: geminiService,
+    }
 }
 
 type RetryConfig struct {
@@ -24,11 +28,19 @@ type StepConfig struct {
 	Retry RetryConfig `json:"retry"`
 }
 
-func (e *Executor) ExecuteStep(step db.WorkflowStep, input []byte) ([]byte, error) {
+func (e *Executor) ExecuteStep(
+	userID uuid.UUID,
+	step db.WorkflowStep,
+	input []byte,
+) ([]byte, error) {
 	retryConfig := getRetryConfig(step.Config)
 
 	if !retryConfig.Enabled {
-		return e.executeStepOnce(step, input)
+		return e.executeStepOnce(
+			userID,
+			step,
+			input,
+		)
 	}
 
 	if retryConfig.MaxAttempts <= 0 {
@@ -43,7 +55,11 @@ func (e *Executor) ExecuteStep(step db.WorkflowStep, input []byte) ([]byte, erro
 	var err error
 
 	for attempt := 1; attempt <= retryConfig.MaxAttempts; attempt++ {
-		output, err = e.executeStepOnce(step, input)
+		output, err = e.executeStepOnce(
+			userID,
+			step,
+			input,
+		)
 
 		if err == nil {
 			return output, nil
@@ -57,7 +73,11 @@ func (e *Executor) ExecuteStep(step db.WorkflowStep, input []byte) ([]byte, erro
 	return nil, err
 }
 
-func (e *Executor) executeStepOnce(step db.WorkflowStep, input []byte) ([]byte, error) {
+func (e *Executor) executeStepOnce(
+	userID uuid.UUID,
+	step db.WorkflowStep,
+	input []byte,
+) ([]byte, error) {
 	switch step.StepType {
 
 	case "webhook_trigger":
@@ -79,9 +99,14 @@ func (e *Executor) executeStepOnce(step db.WorkflowStep, input []byte) ([]byte, 
 
 	case "email":
 		return e.executeEmail(step.Config, input)
-        
-    case "ai":
-        return e.executeAI(step.Config, input)
+
+	case "ai":
+		return e.executeAI(
+            context.Background(),
+			userID,
+			step.Config,
+			input,
+		)
 
 	default:
 		return nil, errors.New(

@@ -107,3 +107,16 @@ CREATE TABLE workflow_usage (
     updated_at TIMESTAMP DEFAULT NOW(),
     UNIQUE(user_id, month)
 );
+
+
+CREATE TABLE user_gemini_keys (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+    encrypted_api_key TEXT NOT NULL,
+
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT unique_user_gemini_key UNIQUE(user_id)
+);

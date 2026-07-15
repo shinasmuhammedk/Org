@@ -24,17 +24,19 @@ import (
 )
 
 type WorkflowService struct {
-	repo   repository.WorkflowRepository
-	queue  *queue.RedisQueue
-	logger *slog.Logger
-
-	subscribers map[string][]chan any
-	mu          sync.Mutex
+	repo          repository.WorkflowRepository
+	queue         *queue.RedisQueue
+	logger        *slog.Logger
+	geminiService executor.GeminiService
+    
+	subscribers   map[string][]chan any
+	mu            sync.Mutex
 }
 
 func NewWorkflowService(
 	repo repository.WorkflowRepository,
 	workflowQueue *queue.RedisQueue,
+    geminiService executor.GeminiService,
 	logger *slog.Logger,
 ) *WorkflowService {
 	return &WorkflowService{
@@ -42,6 +44,7 @@ func NewWorkflowService(
 		queue:       workflowQueue,
 		logger:      logger,
 		subscribers: make(map[string][]chan any),
+        geminiService: geminiService,
 	}
 }
 
@@ -326,10 +329,10 @@ func (s *WorkflowService) SaveWorkflowSteps(
 			}
 
 			configMap["webhook_url_id"] = webhookURLID
-            apiBaseURL := os.Getenv("API_BASE_URL")
-            if apiBaseURL == ""{
-                apiBaseURL = "http://localhost:8080"
-            }
+			apiBaseURL := os.Getenv("API_BASE_URL")
+			if apiBaseURL == "" {
+				apiBaseURL = "http://localhost:8080"
+			}
 			configMap["webhook_url"] = apiBaseURL + "/webhooks/" + webhookURLID
 
 			updatedConfig, err := json.Marshal(configMap)
@@ -723,7 +726,7 @@ func (s *WorkflowService) ExecuteWorkflowRun(
 		return runID, failRun(ctx, errors.New("no start node found"))
 	}
 
-	exec := executor.NewExecutor()
+	exec := executor.NewExecutor(s.geminiService)
 	visited := make(map[uuid.UUID]bool)
 	nodeInputs := make(map[uuid.UUID][]byte)
 
@@ -780,7 +783,7 @@ func (s *WorkflowService) ExecuteWorkflowRun(
 			"message":   step.StepType + " started",
 		})
 
-		output, err := exec.ExecuteStep(step, nodeInputs[stepID])
+		output, err := exec.ExecuteStep(userID, step, nodeInputs[stepID])
 		fmt.Println("STEP TYPE:", step.StepType)
 		fmt.Println("STEP INPUT:", string(nodeInputs[stepID]))
 		fmt.Println("STEP OUTPUT:", string(output))

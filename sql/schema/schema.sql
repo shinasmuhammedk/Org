@@ -1,3 +1,6 @@
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+
 CREATE TABLE users (
     id UUID PRIMARY KEY,
     email TEXT UNIQUE NOT NULL,
@@ -110,4 +113,26 @@ CREATE TABLE workflow_usage (
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     UNIQUE(user_id, month)
+);
+
+
+
+CREATE TABLE user_gemini_keys (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    api_key TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT unique_user_gemini_key UNIQUE(user_id)
+);
+
+CREATE TABLE user_gemini_keys (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    api_key TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+
+    UNIQUE(user_id)
 );

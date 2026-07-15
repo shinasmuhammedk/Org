@@ -36,6 +36,14 @@ type User struct {
 	CreatedAt  sql.NullTime
 }
 
+type UserGeminiKey struct {
+	ID        uuid.UUID
+	UserID    uuid.UUID
+	ApiKey    string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
 type WebhookTrigger struct {
 	ID             uuid.UUID
 	WorkflowID     uuid.UUID
