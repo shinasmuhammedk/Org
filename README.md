@@ -1,6 +1,6 @@
 <div align="center">
 
-# ORG
+# ORG - Workflow Automation Platform
 
 ### Visual Workflow Automation, Built From the Ground Up
 
